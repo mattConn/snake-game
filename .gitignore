@@ -1,0 +1,6 @@
+*.o
+*.swp
+sdl-game
+.gitattributes
+*.user
+Debug

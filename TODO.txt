@@ -1,0 +1,4 @@
+config files (in order of dependence):
+	bullets X
+	enemies X
+	waves
