@@ -133,6 +133,7 @@ int main(int argc, char* argv[])
 				highScore = score > highScore ? score : highScore; // record new highscore
 
 				// increase snake body
+				bodyBlock.lastMove = player.lastMove;
 				switch(player.lastMove)
 				{
 					case global::UP:
@@ -142,7 +143,7 @@ int main(int argc, char* argv[])
 
 					case global::DOWN:
 						bodyBlock.rect.x = player.getRectL();
-						bodyBlock.rect.y = player.getRectTop();
+						bodyBlock.rect.y = player.getRectTop() - player.rect.h;
 					break;
 
 					case global::LEFT:
@@ -151,7 +152,7 @@ int main(int argc, char* argv[])
 					break;
 
 					case global::RIGHT:
-						bodyBlock.rect.x = player.getRectL();
+						bodyBlock.rect.x = player.getRectL() - player.rect.w;
 						bodyBlock.rect.y = player.getRectTop();
 					break;
 				}
@@ -160,7 +161,7 @@ int main(int argc, char* argv[])
 
 				food.rect.x = global::randomInt(800) - food.rect.w;
 				food.rect.y = global::randomInt(600) - food.rect.h;
-			}
+			} // end food intersection routine
 
 			// screen edge collision
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
@@ -171,6 +172,28 @@ int main(int argc, char* argv[])
 
 				score = 0; // reset score
 			}
+
+			for(auto &b : snakeBody)
+			{
+				switch(b.lastMove)
+				{
+					case global::UP:
+						b.rect.y += -bodyBlock.velocity;
+					break;
+
+					case global::DOWN:
+						b.rect.y += bodyBlock.velocity;
+					break;
+
+					case global::LEFT:
+						b.rect.x += -bodyBlock.velocity;
+					break;
+
+					case global::RIGHT:
+						b.rect.x += bodyBlock.velocity;
+					break;
+				}
+			} // end for b in snakebody
 
 			// render player
 			global::render(player.currentTexture, &player.rect);
