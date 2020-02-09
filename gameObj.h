@@ -19,6 +19,8 @@ class gameObj {
 
 	std::string currentTexture;
 
+	int lastMove;
+
 	// fire rate members
 	int duration = 0; // duration of old bullet on screen
 	int timeout = 0; // time before bullet shoul be fired

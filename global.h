@@ -14,6 +14,9 @@ namespace global {
 	extern const int SCREEN_HEIGHT;
 	extern const int SCREEN_WIDTH;
 
+	// moves
+	enum Moves { UP, DOWN, LEFT, RIGHT, MOVES_TOTAL };
+
 	// keypress enum for relating textures to keypress events
 	enum KeyPresses
 	{

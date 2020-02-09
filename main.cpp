@@ -42,11 +42,19 @@ int main(int argc, char* argv[])
 
 	// construct player
 	gameObj player = gameObj("head-up", 5, 25, 25, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
+	player.lastMove = global::UP;
+
+	
+	// snake body block to be cloned
+	gameObj bodyBlock = gameObj("body", player.velocity, 25, 25, 0, 0);
 
 	// construct food
 	gameObj food = gameObj("food", 0, 25, 25, 0, 0);
 	food.rect.x = global::randomInt(800 - food.rect.w, food.rect.w);
 	food.rect.y = global::randomInt(600 - food.rect.h, food.rect.h);
+
+	// snake body blocks
+	std::vector<gameObj> snakeBody;
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -124,10 +132,37 @@ int main(int argc, char* argv[])
 				score++;
 				highScore = score > highScore ? score : highScore; // record new highscore
 
+				// increase snake body
+				switch(player.lastMove)
+				{
+					case global::UP:
+						bodyBlock.rect.x = player.getRectL();
+						bodyBlock.rect.y = player.getRectBottom();
+					break;
+
+					case global::DOWN:
+						bodyBlock.rect.x = player.getRectL();
+						bodyBlock.rect.y = player.getRectTop();
+					break;
+
+					case global::LEFT:
+						bodyBlock.rect.x = player.getRectR();
+						bodyBlock.rect.y = player.getRectTop();
+					break;
+
+					case global::RIGHT:
+						bodyBlock.rect.x = player.getRectL();
+						bodyBlock.rect.y = player.getRectTop();
+					break;
+				}
+
+				snakeBody.push_back(bodyBlock);
+
 				food.rect.x = global::randomInt(800) - food.rect.w;
 				food.rect.y = global::randomInt(600) - food.rect.h;
 			}
 
+			// screen edge collision
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
 			{
 				playerIsDead = true;
@@ -143,9 +178,16 @@ int main(int argc, char* argv[])
 			// render food 
 			global::render(food.currentTexture, &food.rect);
 
+			// render snake body
+			for(auto &b : snakeBody)
+				global::render(b.currentTexture, &b.rect);
+			
 		}
 		else
 		{
+			// remove all body blocks
+			snakeBody.clear();
+
 			// reset position
 			player.rect.x = player.initialX;
 			player.rect.y = player.initialY;
