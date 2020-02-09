@@ -95,14 +95,17 @@ int main(int argc, char* argv[])
 		// clear window
 		SDL_RenderClear(global::renderer);
 
-		// player alive routine (render player, enemy bullets)
-		// ===================================================
+		// player alive routine
+		// ====================
 		if (!playerIsDead)
 		{
-			playerDeathTimeout = SDL_GetTicks() + 500; // keep updating death timeout
+			playerDeathTimeout = SDL_GetTicks() + 800; // keep updating death timeout
 
 			// get input
 			getPlayerInput(player, keyState);
+
+			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
+				playerIsDead = true;
 
 			// render player
 			global::render(player.currentTexture, &player.rect);
@@ -110,6 +113,10 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			// reset position
+			player.rect.x = player.initialX;
+			player.rect.y = player.initialY;
+
 			// player comes back
 			if (SDL_TICKS_PASSED(SDL_GetTicks(), playerDeathTimeout))
 				playerIsDead = false;

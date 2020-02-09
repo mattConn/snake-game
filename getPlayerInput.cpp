@@ -1,24 +1,54 @@
+#pragma once
+
 #include "global.h"
 #include "gameObj.h"
-#include "getPlayerInput.h"
+#include "bulletContainers.h"
 #include <SDL2/SDL.h>
 
 void getPlayerInput(gameObj& player, const Uint8* keyState)
 {
-	enum Moves {LEFT, UP, RIGHT, DOWN};
+	enum Move {LEFT, RIGHT, UP, DOWN};
 
-	static int lastMove = UP;
+	static int lastMove = LEFT;
 
 	static bool wasPressed = false;
 
+	// player keybindings
+	// ==================
 
-	// out of range prevention
-	// =======================
-	if (lastMove > 3) lastMove = 0; // upper bound
-	if (lastMove < 0) lastMove = 3; // lower bound
+	if (keyState[SDL_SCANCODE_UP] || keyState[SDL_SCANCODE_DOWN] || keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT])
+	{
 
-	// map moves to coordinate changes
-	// ===============================
+		// if last move was left/right, ignore left/right inputs
+		if(!wasPressed)
+		{
+			if(lastMove == LEFT || lastMove == RIGHT)
+			{
+				// move up
+				if (keyState[SDL_SCANCODE_UP])
+					lastMove = UP;
+
+				// move down
+				if (keyState[SDL_SCANCODE_DOWN])
+					lastMove = DOWN;
+			}
+			else
+			{
+				// move left
+				if (keyState[SDL_SCANCODE_LEFT])
+					lastMove = LEFT;
+
+				// move right
+				if (keyState[SDL_SCANCODE_RIGHT])
+					lastMove = RIGHT;
+			}
+		}
+
+		wasPressed = true;
+	}
+	else
+		wasPressed = false;
+
 	switch(lastMove)
 	{
 		case UP:
@@ -41,22 +71,4 @@ void getPlayerInput(gameObj& player, const Uint8* keyState)
 				player.rect.x += (player.velocity * player.velocityMod);
 		break;
 	}
-
-	// player keybindings: rotate player
-	// =================================
-
-	if (keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT])
-	{
-		if(!wasPressed)
-		{
-			if (keyState[SDL_SCANCODE_LEFT])
-				lastMove--;
-			else if (keyState[SDL_SCANCODE_RIGHT])
-				lastMove++;
-		}
-		
-		wasPressed = true;
-	}
-	else
-		wasPressed = false; // reset
 }
