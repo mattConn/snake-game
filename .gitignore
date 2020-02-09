@@ -4,3 +4,4 @@ sdl-game
 .gitattributes
 *.user
 Debug
+snake-game
