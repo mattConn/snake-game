@@ -45,8 +45,8 @@ int main(int argc, char* argv[])
 
 	// construct food
 	gameObj food = gameObj("food", 0, 25, 25, 0, 0);
-	food.rect.x = global::randomInt(800 - food.rect.w);
-	food.rect.y = global::randomInt(600 - food.rect.h);
+	food.rect.x = global::randomInt(800 - food.rect.w, food.rect.w);
+	food.rect.y = global::randomInt(600 - food.rect.h, food.rect.h);
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -54,8 +54,10 @@ int main(int argc, char* argv[])
 	// game state booleans
 	bool quit = false;
 	bool paused = false;
-	int deaths = 0;
+
+	// scorekeeping
 	int score = 0;
+	int highScore = 0;
 
 	// event handler
 	SDL_Event event;
@@ -126,7 +128,11 @@ int main(int argc, char* argv[])
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
 			{
 				playerIsDead = true;
-				deaths++;
+				highScore = score > highScore ? score : highScore; // record new highscore
+
+				DEBUG_MSG("Highscore: " << highScore);
+
+				score = 0; // reset score
 			}
 
 			// render player
@@ -141,6 +147,10 @@ int main(int argc, char* argv[])
 			// reset position
 			player.rect.x = player.initialX;
 			player.rect.y = player.initialY;
+
+			// new food position
+			food.rect.x = global::randomInt(800 - food.rect.w, food.rect.w);
+			food.rect.y = global::randomInt(600 - food.rect.h, food.rect.h);
 
 			// player comes back
 			if (SDL_TICKS_PASSED(SDL_GetTicks(), playerDeathTimeout))
@@ -161,8 +171,8 @@ int main(int argc, char* argv[])
 	// close SDL subsystems
 	global::close();
 
-	DEBUG_MSG("Deaths: " << deaths);
 	DEBUG_MSG("Score: " << score);
+	DEBUG_MSG("Highscore: " << highScore);
 
 	return 0;
 }
