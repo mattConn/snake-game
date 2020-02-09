@@ -118,9 +118,12 @@ int main(int argc, char* argv[])
 			// get input
 			getPlayerInput(player, keyState);
 
+			// collect food
 			if(SDL_HasIntersection(&player.rect, &food.rect))
 			{
 				score++;
+				highScore = score > highScore ? score : highScore; // record new highscore
+
 				food.rect.x = global::randomInt(800) - food.rect.w;
 				food.rect.y = global::randomInt(600) - food.rect.h;
 			}
@@ -128,7 +131,6 @@ int main(int argc, char* argv[])
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
 			{
 				playerIsDead = true;
-				highScore = score > highScore ? score : highScore; // record new highscore
 
 				DEBUG_MSG("Highscore: " << highScore);
 
