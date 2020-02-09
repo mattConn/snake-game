@@ -27,14 +27,19 @@ int main(int argc, char* argv[])
 	// ==========
 
 	// load textures
-	global::allTextures["player"] = global::loadTexture("player.png");
+	global::allTextures["head"] = global::loadTexture("head.png");
+	global::allTextures["body"] = global::loadTexture("body.png");
+	global::allTextures["food"] = global::loadTexture("food.png");
 
 
 	// make player 
 	// ===========
 
 	// construct player
-	gameObj player = gameObj("player", 5, 50, 85, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
+	gameObj player = gameObj("head", 5, 25, 25, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
+
+	// construct food
+	gameObj food = gameObj("food", 0, 25, 25, 10, 10);
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -42,6 +47,7 @@ int main(int argc, char* argv[])
 	// game state booleans
 	bool quit = false;
 	bool paused = false;
+	int deaths = 0;
 
 	// event handler
 	SDL_Event event;
@@ -105,10 +111,16 @@ int main(int argc, char* argv[])
 			getPlayerInput(player, keyState);
 
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
+			{
 				playerIsDead = true;
+				deaths++;
+			}
 
 			// render player
 			global::render(player.currentTexture, &player.rect);
+
+			// render food 
+			global::render(food.currentTexture, &food.rect);
 
 		}
 		else
@@ -135,6 +147,8 @@ int main(int argc, char* argv[])
 
 	// close SDL subsystems
 	global::close();
+
+	DEBUG_MSG("Deaths: " << deaths);
 
 	return 0;
 }

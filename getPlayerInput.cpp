@@ -1,6 +1,5 @@
 #include "global.h"
 #include "gameObj.h"
-#include "bulletContainers.h"
 #include <SDL2/SDL.h>
 
 void getPlayerInput(gameObj& player, const Uint8* keyState)
