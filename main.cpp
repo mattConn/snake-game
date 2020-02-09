@@ -7,16 +7,9 @@
 
 #include "debug.h"
 #include "global.h"
-#include "bulletContainers.h"
-#include "baseObjects.h"
-#include "enemyWaves.h"
-#include "animation.h"
 #include "gameObj.h"
-#include "configFromFile.h"
 
 #include "getPlayerInput.h"
-#include "renderEnemies.h"
-#include "renderBullets.h"
 
 int main(int argc, char* argv[])
 {
@@ -41,12 +34,10 @@ int main(int argc, char* argv[])
 	// ===========
 
 	// construct player
-	gameObj player = gameObj("player", 8, 50, 85, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2, "red", 100);
+	gameObj player = gameObj("player", 8, 50, 85, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
-	SDL_Rect bgRect = *bg.getRectPtr(); // rect for 2nd bg render
-	bgRect.y = -bg.getRectH();
 
 	// game state booleans
 	bool quit = false;
@@ -114,7 +105,7 @@ int main(int argc, char* argv[])
 			getPlayerInput(player, keyState);
 
 			// render player
-			global::render(player.getCurrentTexture(), player.getRectPtr());
+			global::render(player.currentTexture, &player.rect);
 
 		}
 		else

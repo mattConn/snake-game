@@ -40,22 +40,22 @@ void getPlayerInput(gameObj& player, const Uint8* keyState)
 	{
 		case UP:
 			if(player.getRectTop() > 0)
-				player.incRectY(-player.getVelocity() * player.getVelocityMod());
+				player.rect.y += (-player.velocity * player.velocityMod);
 		break;
 
 		case DOWN:
 			if(player.getRectBottom() < global::SCREEN_HEIGHT)
-				player.incRectY(player.getVelocity() * player.getVelocityMod());
+				player.rect.y += (player.velocity * player.velocityMod);
 		break;
 
 		case LEFT:
 			if(player.getRectL() > 0)
-				player.incRectX(-player.getVelocity() * player.getVelocityMod());
+				player.rect.x += (-player.velocity * player.velocityMod);
 		break;
 
 		case RIGHT:
 			if(player.getRectR() < global::SCREEN_WIDTH)
-				player.incRectX(player.getVelocity() * player.getVelocityMod());
+				player.rect.x += (player.velocity * player.velocityMod);
 		break;
 	}
 }
