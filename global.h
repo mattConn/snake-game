@@ -35,6 +35,9 @@ namespace global {
 	// function prototypes
 	// ===================
 
+	// generate random int over inclusive range
+	extern int randomInt(const int &max, const int &min = 0);
+
 	// SDL rect wrapper
 	extern SDL_Rect makeRect(const int &x, const int &y, const int &w, const int &h);
 

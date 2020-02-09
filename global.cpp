@@ -1,5 +1,7 @@
 #include "global.h"
 #include "debug.h"
+#include <cstdlib>
+#include <ctime>
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -26,6 +28,13 @@ std::map<std::string, SDL_Texture*> allTextures;
 
 // functions
 // =========
+
+// generate random int over inclusive range
+int randomInt(const int &max, const int &min)
+{
+	std::srand(SDL_GetTicks()); 
+	return std::rand() % max + min;
+}
 
 // SDL rect wrapper
 SDL_Rect makeRect(const int &xPos, const int &yPos, const int &width, const int &height)

@@ -3,6 +3,8 @@
 #include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <cstdlib>
+#include <ctime>
 #undef main
 
 #include "debug.h"
@@ -27,7 +29,10 @@ int main(int argc, char* argv[])
 	// ==========
 
 	// load textures
-	global::allTextures["head"] = global::loadTexture("head.png");
+	global::allTextures["head-up"] = global::loadTexture("head-up.png");
+	global::allTextures["head-right"] = global::loadTexture("head-right.png");
+	global::allTextures["head-down"] = global::loadTexture("head-down.png");
+	global::allTextures["head-left"] = global::loadTexture("head-left.png");
 	global::allTextures["body"] = global::loadTexture("body.png");
 	global::allTextures["food"] = global::loadTexture("food.png");
 
@@ -36,10 +41,12 @@ int main(int argc, char* argv[])
 	// ===========
 
 	// construct player
-	gameObj player = gameObj("head", 5, 25, 25, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
+	gameObj player = gameObj("head-up", 5, 25, 25, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
 
 	// construct food
-	gameObj food = gameObj("food", 0, 25, 25, 10, 10);
+	gameObj food = gameObj("food", 0, 25, 25, 0, 0);
+	food.rect.x = global::randomInt(800 - food.rect.w);
+	food.rect.y = global::randomInt(600 - food.rect.h);
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -48,6 +55,7 @@ int main(int argc, char* argv[])
 	bool quit = false;
 	bool paused = false;
 	int deaths = 0;
+	int score = 0;
 
 	// event handler
 	SDL_Event event;
@@ -58,17 +66,15 @@ int main(int argc, char* argv[])
 	// player life state bools
 	bool playerIsDead = false;
 	int playerDeathTimeout;
-	
 
 	// game loop
 	//===========
 	while (!quit)
 	{
-
 		// event polling loop
 		while (SDL_PollEvent(&event))
 		{
-			// window close event
+		// window close event
 			if (event.type == SDL_QUIT)
 			{
 				quit = true;
@@ -110,6 +116,13 @@ int main(int argc, char* argv[])
 			// get input
 			getPlayerInput(player, keyState);
 
+			if(SDL_HasIntersection(&player.rect, &food.rect))
+			{
+				score++;
+				food.rect.x = global::randomInt(800) - food.rect.w;
+				food.rect.y = global::randomInt(600) - food.rect.h;
+			}
+
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
 			{
 				playerIsDead = true;
@@ -149,6 +162,7 @@ int main(int argc, char* argv[])
 	global::close();
 
 	DEBUG_MSG("Deaths: " << deaths);
+	DEBUG_MSG("Score: " << score);
 
 	return 0;
 }
