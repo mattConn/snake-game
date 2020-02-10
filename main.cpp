@@ -48,6 +48,12 @@ int main(int argc, char* argv[])
 
 	
 	// snake body block to be cloned
+	// =============================
+	// S body block needs a lastMove and a moveSeq.
+	// It will move in the direction of lastmove until it reaches the x,y in moveSeq.front().
+	// Once it reahes that x,y, it's lastMove will be updated to the move in moveSeq.front().
+	// That pair in moveSeq will then be popped off moveSeq front.
+
 	gameObj bodyBlock = gameObj("body", player.velocity, 25, 25, 0, 0);
 	bodyBlock.rect.x = player.getRectL();
 	bodyBlock.rect.y = player.getRectBottom();
@@ -228,8 +234,6 @@ int main(int argc, char* argv[])
 			// screen edge collision
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
 			playerIsDead = true;
-
-				//DEBUG_MSG("Highscore: " << highScore);
 
 
 			for(int i = 1; i < snakeBody.size(); i++)
