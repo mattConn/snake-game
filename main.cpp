@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 	// ===========
 
 	// construct player
-	gameObj player = gameObj("head-up", 5, 25, 25, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
+	gameObj player = gameObj("head-up", 5, global::SQUARE, global::SQUARE, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
 	player.lastMove = global::UP;
 
 	
@@ -55,13 +55,13 @@ int main(int argc, char* argv[])
 	// Once it reahes that x,y, it's lastMove will be updated to the move in moveSeq.front().
 	// That pair in moveSeq will then be popped off moveSeq front.
 
-	gameObj bodyBlock = gameObj("body", player.velocity, 25, 25, 0, 0);
+	gameObj bodyBlock = gameObj("body", player.velocity, global::SQUARE, global::SQUARE, 0, 0);
 
 	// snake body blocks
 	std::vector<gameObj> snakeBody;
 
 	// construct food
-	gameObj food = gameObj("food", 0, 25, 25, 0, 0);
+	gameObj food = gameObj("food", 0, global::SQUARE, global::SQUARE, 0, 0);
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -84,6 +84,7 @@ int main(int argc, char* argv[])
 	bool playerIsDead = true;
 	int playerDeathTimeout;
 
+	DEBUG_MSG("entering game loop");
 	// game loop
 	//===========
 	while (!quit)

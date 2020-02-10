@@ -14,6 +14,8 @@ namespace global {
 	extern const int SCREEN_HEIGHT;
 	extern const int SCREEN_WIDTH;
 
+	extern const int SQUARE;
+
 	// moves
 	enum Moves { UP, DOWN, LEFT, RIGHT, MOVES_TOTAL };
 
