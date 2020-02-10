@@ -55,12 +55,9 @@ int main(int argc, char* argv[])
 	// That pair in moveSeq will then be popped off moveSeq front.
 
 	gameObj bodyBlock = gameObj("body", player.velocity, 25, 25, 0, 0);
-	bodyBlock.rect.x = player.getRectL();
-	bodyBlock.rect.y = player.getRectBottom();
 
 	// snake body blocks
 	std::vector<gameObj> snakeBody;
-	snakeBody.push_back(bodyBlock);
 
 	// construct food
 	gameObj food = gameObj("food", 0, 25, 25, 0, 0);
@@ -85,7 +82,7 @@ int main(int argc, char* argv[])
 	const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 
 	// player life state bools
-	bool playerIsDead = false;
+	bool playerIsDead = true;
 	int playerDeathTimeout;
 
 	// game loop
