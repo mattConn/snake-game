@@ -14,6 +14,7 @@
 #include "updateObjPos.h"
 
 #include "getPlayerInput.h"
+#include "glueToBack.h"
 
 int main(int argc, char* argv[])
 {
@@ -155,14 +156,47 @@ int main(int argc, char* argv[])
 					// block's coords
 					std::pair<int, int> xy = {b.moveSeq.front().first.first, b.moveSeq.front().first.second};
 
-					if(xy.first == b.rect.x && xy.second == b.rect.y)
+					switch(b.lastMove)
 					{
-						b.lastMove = b.moveSeq.front().second;
-						b.moveSeq.pop_front();
+						case global::UP:
+							if(xy.second >= b.rect.y)
+							{
+								b.lastMove = b.moveSeq.front().second;
+								b.moveSeq.pop_front();
+							}
+						break;
+						case global::DOWN:
+							if(xy.second <= b.rect.y)
+							{
+								b.lastMove = b.moveSeq.front().second;
+								b.moveSeq.pop_front();
+							}
+						break;
+						case global::LEFT:
+							if(xy.first >= b.rect.x)
+							{
+								b.lastMove = b.moveSeq.front().second;
+								b.moveSeq.pop_front();
+							}
+						break;
+						case global::RIGHT:
+							if(xy.first <= b.rect.x)
+							{
+								b.lastMove = b.moveSeq.front().second;
+								b.moveSeq.pop_front();
+							}
+						break;
+
+							/*
+							if(xy.first == b.rect.x && xy.second == b.rect.y)
+							{
+								b.lastMove = b.moveSeq.front().second;
+								b.moveSeq.pop_front();
+							}
+							*/
 					}
-				}
+				} // end if moveSeq not empty
 				
-				//if(b.rect.x == 
 			}
 
 			// set player texture
@@ -198,6 +232,7 @@ int main(int argc, char* argv[])
 				bodyBlock.lastMove = snakeBody.back().lastMove;
 				bodyBlock.moveSeq = snakeBody.back().moveSeq;
 
+				/*
 				switch(snakeBody.back().lastMove) // place snake block behind tail
 				{
 					case global::UP:
@@ -220,6 +255,8 @@ int main(int argc, char* argv[])
 						bodyBlock.rect.y = snakeBody.back().getRectTop();
 					break;
 				}
+				*/
+				glueToBack(snakeBody.back(), bodyBlock);
 
 				snakeBody.push_back(bodyBlock);
 
@@ -232,12 +269,12 @@ int main(int argc, char* argv[])
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
 			playerIsDead = true;
 
-
+			// collision with self
 			for(int i = 1; i < snakeBody.size(); i++)
 				if(SDL_HasIntersection(&player.rect, &snakeBody[i].rect))
 					playerIsDead = true;
 
-			// update snake block position
+			// translate snake body blocks
 			for(auto &b : snakeBody)
 				updateObjPos(b);
 
@@ -265,10 +302,9 @@ int main(int argc, char* argv[])
 
 			// reset snake body
 			snakeBody.clear();
-			bodyBlock.rect.x = player.getRectL();
-			bodyBlock.rect.y = player.getRectBottom();
 			bodyBlock.lastMove = player.lastMove;
 			bodyBlock.moveSeq.clear();
+			glueToBack(player, bodyBlock);
 			snakeBody.push_back(bodyBlock);
 
 			// new food position
