@@ -189,30 +189,32 @@ int main(int argc, char* argv[])
 				highScore = score > highScore ? score : highScore; // record new highscore
 
 				// increase snake body
-				bodyBlock.lastMove = player.lastMove;
+				// ===================
 
-				// last body block in snake body
-				gameObj lastBlock = snakeBody.back();
-				switch(lastBlock.lastMove) // place snake block behind tail
+				// set new last block's last move and move sequence to old last block's
+				bodyBlock.lastMove = snakeBody.back().lastMove;
+				bodyBlock.moveSeq = snakeBody.back().moveSeq;
+
+				switch(snakeBody.back().lastMove) // place snake block behind tail
 				{
 					case global::UP:
-						bodyBlock.rect.x = lastBlock.getRectL();
-						bodyBlock.rect.y = lastBlock.getRectBottom();
+						bodyBlock.rect.x = snakeBody.back().getRectL();
+						bodyBlock.rect.y = snakeBody.back().getRectBottom();
 					break;
 
 					case global::DOWN:
-						bodyBlock.rect.x = lastBlock.getRectL();
-						bodyBlock.rect.y = lastBlock.getRectTop() - player.rect.h;
+						bodyBlock.rect.x = snakeBody.back().getRectL();
+						bodyBlock.rect.y = snakeBody.back().getRectTop() - player.rect.h;
 					break;
 
 					case global::LEFT:
-						bodyBlock.rect.x = lastBlock.getRectR();
-						bodyBlock.rect.y = lastBlock.getRectTop();
+						bodyBlock.rect.x = snakeBody.back().getRectR();
+						bodyBlock.rect.y = snakeBody.back().getRectTop();
 					break;
 
 					case global::RIGHT:
-						bodyBlock.rect.x = lastBlock.getRectL() - player.rect.w;
-						bodyBlock.rect.y = lastBlock.getRectTop();
+						bodyBlock.rect.x = snakeBody.back().getRectL() - player.rect.w;
+						bodyBlock.rect.y = snakeBody.back().getRectTop();
 					break;
 				}
 
