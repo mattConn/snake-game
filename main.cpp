@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	bodyBlock.rect.y = player.getRectBottom();
 
 	// snake body blocks
-	std::list<gameObj> snakeBody;
+	std::vector<gameObj> snakeBody;
 	snakeBody.push_back(bodyBlock);
 
 	// construct food
@@ -227,13 +227,14 @@ int main(int argc, char* argv[])
 
 			// screen edge collision
 			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
-			{
-				playerIsDead = true;
+			playerIsDead = true;
 
-				DEBUG_MSG("Highscore: " << highScore);
+				//DEBUG_MSG("Highscore: " << highScore);
 
-				score = 0; // reset score
-			}
+
+			for(int i = 1; i < snakeBody.size(); i++)
+				if(SDL_HasIntersection(&player.rect, &snakeBody[i].rect))
+					playerIsDead = true;
 
 			// update snake block position
 			for(auto &b : snakeBody)
@@ -252,6 +253,7 @@ int main(int argc, char* argv[])
 		}
 		else // player is dead
 		{
+			score = 0; // reset score
 
 			// reset position
 			player.rect.x = player.initialX;
@@ -265,6 +267,7 @@ int main(int argc, char* argv[])
 			bodyBlock.rect.x = player.getRectL();
 			bodyBlock.rect.y = player.getRectBottom();
 			bodyBlock.lastMove = player.lastMove;
+			bodyBlock.moveSeq.clear();
 			snakeBody.push_back(bodyBlock);
 
 			// new food position
