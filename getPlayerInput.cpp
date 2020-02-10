@@ -41,31 +41,4 @@ void getPlayerInput(gameObj& player, const Uint8* keyState)
 	}
 	else
 		wasPressed = false;
-
-	switch(player.lastMove)
-	{
-		case global::UP:
-			player.currentTexture = "head-up";
-			if(player.getRectTop() > 0)
-				player.rect.y += (-player.velocity * player.velocityMod);
-		break;
-
-		case global::DOWN:
-			player.currentTexture = "head-down";
-			if(player.getRectBottom() < global::SCREEN_HEIGHT)
-				player.rect.y += (player.velocity * player.velocityMod);
-		break;
-
-		case global::LEFT:
-			player.currentTexture = "head-left";
-			if(player.getRectL() > 0)
-				player.rect.x += (-player.velocity * player.velocityMod);
-		break;
-
-		case global::RIGHT:
-			player.currentTexture = "head-right";
-			if(player.getRectR() < global::SCREEN_WIDTH)
-				player.rect.x += (player.velocity * player.velocityMod);
-		break;
-	}
 }

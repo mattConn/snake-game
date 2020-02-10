@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "global.h"
 #include "gameObj.h"
+#include "updateObjPos.h"
 
 #include "getPlayerInput.h"
 
@@ -126,6 +127,29 @@ int main(int argc, char* argv[])
 			// get input
 			getPlayerInput(player, keyState);
 
+			// update player pos
+			updateObjPos(player);
+
+			// set player texture
+			switch(player.lastMove)
+			{
+				case global::UP:
+					player.currentTexture = "head-up";
+				break;
+
+				case global::DOWN:
+					player.currentTexture = "head-down";
+				break;
+
+				case global::LEFT:
+					player.currentTexture = "head-left";
+				break;
+
+				case global::RIGHT:
+					player.currentTexture = "head-right";
+				break;
+			}
+
 			// collect food
 			if(SDL_HasIntersection(&player.rect, &food.rect))
 			{
@@ -134,7 +158,7 @@ int main(int argc, char* argv[])
 
 				// increase snake body
 				bodyBlock.lastMove = player.lastMove;
-				switch(player.lastMove)
+				switch(player.lastMove) // place snake block behind head
 				{
 					case global::UP:
 						bodyBlock.rect.x = player.getRectL();
@@ -159,6 +183,7 @@ int main(int argc, char* argv[])
 
 				snakeBody.push_back(bodyBlock);
 
+				// new food position
 				food.rect.x = global::randomInt(800) - food.rect.w;
 				food.rect.y = global::randomInt(600) - food.rect.h;
 			} // end food intersection routine
@@ -173,27 +198,9 @@ int main(int argc, char* argv[])
 				score = 0; // reset score
 			}
 
+			// update snake block position
 			for(auto &b : snakeBody)
-			{
-				switch(b.lastMove)
-				{
-					case global::UP:
-						b.rect.y += -bodyBlock.velocity;
-					break;
-
-					case global::DOWN:
-						b.rect.y += bodyBlock.velocity;
-					break;
-
-					case global::LEFT:
-						b.rect.x += -bodyBlock.velocity;
-					break;
-
-					case global::RIGHT:
-						b.rect.x += bodyBlock.velocity;
-					break;
-				}
-			} // end for b in snakebody
+				updateObjPos(b);
 
 			// render player
 			global::render(player.currentTexture, &player.rect);

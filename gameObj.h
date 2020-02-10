@@ -9,8 +9,6 @@
 #include "global.h"
 #include "debug.h"
 
-typedef std::vector<bool (*)(gameObj*)> animVector;
-typedef std::pair<animVector, int> animPair;
 
 // any game object
 // ===============
@@ -33,8 +31,9 @@ class gameObj {
 	int initialX = 0;
 	int initialY = 0;
 
-	// sequence of animations: pair of vector and duration
-	std::vector<animPair> animationSequence;
+	// sequence of coords and moves
+	// ((x,y), move)
+	std::vector<std::pair<std::pair<int, int>, int>> turningPoints;
 
 	// default constructor
 	gameObj();
