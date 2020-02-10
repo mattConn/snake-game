@@ -2,15 +2,11 @@
 #include <SDL2/SDL_image.h>
 #include <cassert>
 #include <string>
-#include <vector>
 #include <utility>
 #include "global.h"
 #include "debug.h"
 
 #include "gameObj.h"
-
-typedef std::vector<bool (*)(gameObj*)> animVector;
-typedef std::pair<animVector, int> animPair;
 
 // default constructor
 gameObj::gameObj()

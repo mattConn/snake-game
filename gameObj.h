@@ -4,7 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include <cassert>
 #include <string>
-#include <vector>
+#include <list>
 #include <utility>
 #include "global.h"
 #include "debug.h"
@@ -33,7 +33,7 @@ class gameObj {
 
 	// sequence of coords and moves
 	// ((x,y), move)
-	std::vector<std::pair<std::pair<int, int>, int>> turningPoints;
+	std::list<std::pair<std::pair<int, int>, int>> moveSeq;
 
 	// default constructor
 	gameObj();

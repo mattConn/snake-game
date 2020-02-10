@@ -1,5 +1,6 @@
 #include <iostream>
-#include <vector>
+#include <list>
+#include <utility>
 #include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -48,14 +49,17 @@ int main(int argc, char* argv[])
 	
 	// snake body block to be cloned
 	gameObj bodyBlock = gameObj("body", player.velocity, 25, 25, 0, 0);
+	bodyBlock.rect.x = player.getRectL();
+	bodyBlock.rect.y = player.getRectBottom();
+
+	// snake body blocks
+	std::list<gameObj> snakeBody;
+	snakeBody.push_back(bodyBlock);
 
 	// construct food
 	gameObj food = gameObj("food", 0, 25, 25, 0, 0);
 	food.rect.x = global::randomInt(800 - food.rect.w, food.rect.w);
 	food.rect.y = global::randomInt(600 - food.rect.h, food.rect.h);
-
-	// snake body blocks
-	std::vector<gameObj> snakeBody;
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -124,11 +128,39 @@ int main(int argc, char* argv[])
 		{
 			playerDeathTimeout = SDL_GetTicks() + 800; // keep updating death timeout
 
+			// save player move
+			int playerMove = player.lastMove;
+
 			// get input
 			getPlayerInput(player, keyState);
 
+			// check for new player move, record move
+			if(player.lastMove != playerMove)
+			{
+				for(auto &b : snakeBody)
+					b.moveSeq.push_back({{player.rect.x,player.rect.y}, player.lastMove});
+			}
+
 			// update player pos
 			updateObjPos(player);
+
+			// update snake block moveSeq 
+			for(auto &b : snakeBody)
+			{
+				if(b.moveSeq.size() > 0)
+				{
+					// block's coords
+					std::pair<int, int> xy = {b.moveSeq.front().first.first, b.moveSeq.front().first.second};
+
+					if(xy.first == b.rect.x && xy.second == b.rect.y)
+					{
+						b.lastMove = b.moveSeq.front().second;
+						b.moveSeq.pop_front();
+					}
+				}
+				
+				//if(b.rect.x == 
+			}
 
 			// set player texture
 			switch(player.lastMove)
@@ -158,26 +190,29 @@ int main(int argc, char* argv[])
 
 				// increase snake body
 				bodyBlock.lastMove = player.lastMove;
-				switch(player.lastMove) // place snake block behind head
+
+				// last body block in snake body
+				gameObj lastBlock = snakeBody.back();
+				switch(lastBlock.lastMove) // place snake block behind tail
 				{
 					case global::UP:
-						bodyBlock.rect.x = player.getRectL();
-						bodyBlock.rect.y = player.getRectBottom();
+						bodyBlock.rect.x = lastBlock.getRectL();
+						bodyBlock.rect.y = lastBlock.getRectBottom();
 					break;
 
 					case global::DOWN:
-						bodyBlock.rect.x = player.getRectL();
-						bodyBlock.rect.y = player.getRectTop() - player.rect.h;
+						bodyBlock.rect.x = lastBlock.getRectL();
+						bodyBlock.rect.y = lastBlock.getRectTop() - player.rect.h;
 					break;
 
 					case global::LEFT:
-						bodyBlock.rect.x = player.getRectR();
-						bodyBlock.rect.y = player.getRectTop();
+						bodyBlock.rect.x = lastBlock.getRectR();
+						bodyBlock.rect.y = lastBlock.getRectTop();
 					break;
 
 					case global::RIGHT:
-						bodyBlock.rect.x = player.getRectL() - player.rect.w;
-						bodyBlock.rect.y = player.getRectTop();
+						bodyBlock.rect.x = lastBlock.getRectL() - player.rect.w;
+						bodyBlock.rect.y = lastBlock.getRectTop();
 					break;
 				}
 
@@ -213,14 +248,22 @@ int main(int argc, char* argv[])
 				global::render(b.currentTexture, &b.rect);
 			
 		}
-		else
+		else // player is dead
 		{
-			// remove all body blocks
-			snakeBody.clear();
 
 			// reset position
 			player.rect.x = player.initialX;
 			player.rect.y = player.initialY;
+
+			// reset last move
+			player.lastMove = global::UP;
+
+			// reset snake body
+			snakeBody.clear();
+			bodyBlock.rect.x = player.getRectL();
+			bodyBlock.rect.y = player.getRectBottom();
+			bodyBlock.lastMove = player.lastMove;
+			snakeBody.push_back(bodyBlock);
 
 			// new food position
 			food.rect.x = global::randomInt(800 - food.rect.w, food.rect.w);
