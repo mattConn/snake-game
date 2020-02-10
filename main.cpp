@@ -62,8 +62,6 @@ int main(int argc, char* argv[])
 
 	// construct food
 	gameObj food = gameObj("food", 0, 25, 25, 0, 0);
-	food.rect.x = global::randomInt(800 - food.rect.w, food.rect.w);
-	food.rect.y = global::randomInt(600 - food.rect.h, food.rect.h);
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -261,8 +259,8 @@ int main(int argc, char* argv[])
 				snakeBody.push_back(bodyBlock);
 
 				// new food position
-				food.rect.x = global::randomInt(800) - food.rect.w;
-				food.rect.y = global::randomInt(600) - food.rect.h;
+				food.rect.x = global::randomInt(global::SCREEN_WIDTH - food.rect.w);
+				food.rect.y = global::randomInt(global::SCREEN_HEIGHT - food.rect.h);
 			} // end food intersection routine
 
 			// screen edge collision
@@ -308,8 +306,8 @@ int main(int argc, char* argv[])
 			snakeBody.push_back(bodyBlock);
 
 			// new food position
-			food.rect.x = global::randomInt(800 - food.rect.w, food.rect.w);
-			food.rect.y = global::randomInt(600 - food.rect.h, food.rect.h);
+			food.rect.x = global::randomInt(global::SCREEN_WIDTH - food.rect.w);
+			food.rect.y = global::randomInt(global::SCREEN_HEIGHT - food.rect.h);
 
 			// player comes back
 			if (SDL_TICKS_PASSED(SDL_GetTicks(), playerDeathTimeout))
