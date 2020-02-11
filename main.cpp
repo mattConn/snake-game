@@ -6,6 +6,7 @@
 #include <SDL2/SDL_image.h>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 #undef main
 
 #include "debug.h"
@@ -82,7 +83,7 @@ int main(int argc, char* argv[])
 
 	// scorekeeping
 	int score = 0;
-	int highScore = 0;
+	int highscore = 0;
 
 	// event handler
 	SDL_Event event;
@@ -93,6 +94,7 @@ int main(int argc, char* argv[])
 	// player life state bools
 	bool playerIsDead = true;
 	int playerDeathTimeout;
+	bool playerDeathRoutineRan = false; // for running death routine only once
 
 	DEBUG_MSG("entering game loop");
 	// game loop
@@ -232,7 +234,25 @@ int main(int argc, char* argv[])
 			if(SDL_HasIntersection(&player.rect, &food.rect))
 			{
 				score++;
-				highScore = score > highScore ? score : highScore; // record new highscore
+				highscore = score > highscore ? score : highscore; // record new highscore
+
+				int scoreTmp = score;
+				int highscoreTmp = highscore;
+				
+				// update score textures
+				for(int i = scoreObjs.size()-1; i > -1; i--)
+				{
+					scoreObjs[i].currentTexture = std::to_string(scoreTmp % 10);
+					scoreTmp /= 10;
+				}
+
+				// update highscore textures
+				for(int i = highscoreObjs.size()-1; i > -1; i--)
+				{
+					highscoreObjs[i].currentTexture = std::to_string(highscoreTmp % 10);
+					highscoreTmp /= 10;
+				}
+				
 
 				// increase snake body
 				// ===================
@@ -286,29 +306,40 @@ int main(int argc, char* argv[])
 		}
 		else // player is dead
 		{
-			score = 0; // reset score
+			if(!playerDeathRoutineRan)
+			{
+				score = 0; // reset score
 
-			// reset position
-			player.rect.x = player.initialX;
-			player.rect.y = player.initialY;
+				for(int i = 0; i < scoreObjs.size(); i++)
+					scoreObjs[i].currentTexture = "0";
 
-			// reset last move
-			player.lastMove = global::UP;
+				// reset position
+				player.rect.x = player.initialX;
+				player.rect.y = player.initialY;
 
-			// reset snake body
-			snakeBody.clear();
-			bodyBlock.lastMove = player.lastMove;
-			bodyBlock.moveSeq.clear();
-			glueToBack(player, bodyBlock);
-			snakeBody.push_back(bodyBlock);
+				// reset last move
+				player.lastMove = global::UP;
 
-			// new food position
-			food.rect.x = global::randomInt(global::SCREEN_WIDTH - food.rect.w);
-			food.rect.y = global::randomInt(global::SCREEN_HEIGHT - food.rect.h);
+				// reset snake body
+				snakeBody.clear();
+				bodyBlock.lastMove = player.lastMove;
+				bodyBlock.moveSeq.clear();
+				glueToBack(player, bodyBlock);
+				snakeBody.push_back(bodyBlock);
+
+				// new food position
+				food.rect.x = global::randomInt(global::SCREEN_WIDTH - food.rect.w);
+				food.rect.y = global::randomInt(global::SCREEN_HEIGHT - food.rect.h);
+
+				playerDeathRoutineRan = true;
+			}
 
 			// player comes back
 			if (SDL_TICKS_PASSED(SDL_GetTicks(), playerDeathTimeout))
+			{
 				playerIsDead = false;
+				playerDeathRoutineRan = false;
+			}
 		}
 
 		// render current textures
@@ -326,7 +357,7 @@ int main(int argc, char* argv[])
 	global::close();
 
 	DEBUG_MSG("Score: " << score);
-	DEBUG_MSG("Highscore: " << highScore);
+	DEBUG_MSG("Highscore: " << highscore);
 
 	return 0;
 }
