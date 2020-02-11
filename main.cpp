@@ -297,9 +297,8 @@ int main(int argc, char* argv[])
 			for(auto &s : scoreObjs)
 				global::render(s.currentTexture, &s.rect);
 
-			//for(auto &s : highscoreObjs)
-			for(int i = 0; i < highscoreObjs.size(); i++)
-				global::render(highscoreObjs[i].currentTexture, &highscoreObjs[i].rect);
+			for(auto &s : highscoreObjs)
+				global::render(s.currentTexture, &s.rect);
 
 
 			// render player
