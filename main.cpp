@@ -39,7 +39,17 @@ int main(int argc, char* argv[])
 	global::allTextures["head-left"] = global::loadTexture("head-left.png");
 	global::allTextures["body"] = global::loadTexture("body.png");
 	global::allTextures["food"] = global::loadTexture("food.png");
-	for(int i = 0; i < 10; i++) global::allTextures[std::to_string(i)] = global::loadTexture(std::string(std::to_string(i)+".png").c_str());
+	global::allTextures["0"] = global::loadTexture("0.png");
+	global::allTextures["1"] = global::loadTexture("1.png");
+	global::allTextures["2"] = global::loadTexture("2.png");
+	global::allTextures["3"] = global::loadTexture("3.png");
+	global::allTextures["4"] = global::loadTexture("4.png");
+	global::allTextures["5"] = global::loadTexture("5.png");
+	global::allTextures["6"] = global::loadTexture("6.png");
+	global::allTextures["7"] = global::loadTexture("7.png");
+	global::allTextures["8"] = global::loadTexture("8.png");
+	global::allTextures["9"] = global::loadTexture("9.png");
+	//for(int i = 0; i < 10; i++) global::allTextures[std::to_string(i)] = global::loadTexture(std::string(std::to_string(i)+".png").c_str());
 
 
 	// make player 
