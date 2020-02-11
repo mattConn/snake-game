@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
 	global::allTextures["head-left"] = global::loadTexture("head-left.png");
 	global::allTextures["body"] = global::loadTexture("body.png");
 	global::allTextures["food"] = global::loadTexture("food.png");
+	for(int i = 0; i < 10; i++) global::allTextures[std::to_string(i)] = global::loadTexture(std::string(std::to_string(i)+".png").c_str());
 
 
 	// make player 
@@ -46,6 +47,15 @@ int main(int argc, char* argv[])
 	// construct player
 	gameObj player = gameObj("head-up", 5, global::SQUARE, global::SQUARE, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
 	player.lastMove = global::UP;
+
+	std::vector<gameObj> scoreObjs;
+	std::vector<gameObj> highscoreObjs;
+
+	for(int i = 0; i < 3; i++)
+	{
+		scoreObjs.push_back( gameObj(std::to_string(0), 0, global::SQUARE/2, global::SQUARE/2, i * (global::SQUARE/2), 0) );
+		highscoreObjs.push_back( gameObj(std::to_string(0), 0, global::SQUARE/2, global::SQUARE/2, i*(global::SQUARE/2) + global::SCREEN_WIDTH - (global::SQUARE/2)*3, 0) );
+	}
 
 	
 	// snake body block to be cloned
@@ -231,30 +241,6 @@ int main(int argc, char* argv[])
 				bodyBlock.lastMove = snakeBody.back().lastMove;
 				bodyBlock.moveSeq = snakeBody.back().moveSeq;
 
-				/*
-				switch(snakeBody.back().lastMove) // place snake block behind tail
-				{
-					case global::UP:
-						bodyBlock.rect.x = snakeBody.back().getRectL();
-						bodyBlock.rect.y = snakeBody.back().getRectBottom();
-					break;
-
-					case global::DOWN:
-						bodyBlock.rect.x = snakeBody.back().getRectL();
-						bodyBlock.rect.y = snakeBody.back().getRectTop() - player.rect.h;
-					break;
-
-					case global::LEFT:
-						bodyBlock.rect.x = snakeBody.back().getRectR();
-						bodyBlock.rect.y = snakeBody.back().getRectTop();
-					break;
-
-					case global::RIGHT:
-						bodyBlock.rect.x = snakeBody.back().getRectL() - player.rect.w;
-						bodyBlock.rect.y = snakeBody.back().getRectTop();
-					break;
-				}
-				*/
 				glueToBack(snakeBody.back(), bodyBlock);
 
 				snakeBody.push_back(bodyBlock);
@@ -277,6 +263,15 @@ int main(int argc, char* argv[])
 			for(auto &b : snakeBody)
 				updateObjPos(b);
 
+			// render score
+			for(auto &s : scoreObjs)
+				global::render(s.currentTexture, &s.rect);
+
+			//for(auto &s : highscoreObjs)
+			for(int i = 0; i < highscoreObjs.size(); i++)
+				global::render(highscoreObjs[i].currentTexture, &highscoreObjs[i].rect);
+
+
 			// render player
 			global::render(player.currentTexture, &player.rect);
 
@@ -286,6 +281,7 @@ int main(int argc, char* argv[])
 			// render snake body
 			for(auto &b : snakeBody)
 				global::render(b.currentTexture, &b.rect);
+
 			
 		}
 		else // player is dead
