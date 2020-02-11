@@ -148,7 +148,9 @@ SDL_Texture *loadTexture(const char fileName[])
 
 	if (texture == nullptr)
 	{
-		DEBUG_MSG("Unable to load texture: " << fileName << " : " << SDL_GetError());
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", std::string("Could not load \""+std::string(fileName)+"\".").c_str(), NULL);
+        DEBUG_MSG("Unable to load texture: " << fileName << " : " << SDL_GetError());
+        exit(EXIT_FAILURE);
 		return nullptr;
 	}
 
