@@ -31,6 +31,15 @@ std::map<std::string, SDL_Texture*> allTextures;
 // functions
 // =========
 
+// return current datestring
+std::string getDateString()
+{
+	time_t t = std::time(NULL);
+	std::string dateString = std::string(std::ctime(&t));
+	dateString[dateString.size()-1] = '\0';
+	return dateString;
+}
+
 // generate random int over inclusive range
 int randomInt(const int &max, const int &min)
 {

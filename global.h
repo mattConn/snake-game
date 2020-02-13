@@ -40,6 +40,9 @@ namespace global {
 	// function prototypes
 	// ===================
 
+	// return current datestring
+	extern std::string getDateString();
+
 	// generate random int over inclusive range
 	extern int randomInt(const int &max, const int &min = 0);
 
