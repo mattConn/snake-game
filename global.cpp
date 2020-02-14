@@ -31,6 +31,20 @@ std::map<std::string, SDL_Texture*> allTextures;
 // functions
 // =========
 
+// write data to file
+template <class T>
+bool writeToFile(const std::string &fileName, const T &data)
+{
+	std::ofstream file;
+	file.open(fileName);
+
+	if(!file) return false;
+
+	file << data;
+
+	return true;
+}
+
 // return current datestring
 std::string getDateString()
 {

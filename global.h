@@ -40,28 +40,32 @@ namespace global {
 	// function prototypes
 	// ===================
 
+	// write data to file
+	template <class T>
+	bool writeToFile(const std::string &fileName, const T &data);
+
 	// return current datestring
-	extern std::string getDateString();
+	std::string getDateString();
 
 	// generate random int over inclusive range
-	extern int randomInt(const int &max, const int &min = 0);
+	int randomInt(const int &max, const int &min = 0);
 
 	// SDL rect wrapper
-	extern SDL_Rect makeRect(const int &x, const int &y, const int &w, const int &h);
+	SDL_Rect makeRect(const int &x, const int &y, const int &w, const int &h);
 
 	// SDL_RenderCopy wrapper
-	extern bool render(const std::string texture, const SDL_Rect* rect);
+	bool render(const std::string texture, const SDL_Rect* rect);
 
 	// init SDL subsystems, windows etc.
-	extern bool init(SDL_Window *&window, SDL_Surface *&windowSurface);
+	bool init(SDL_Window *&window, SDL_Surface *&windowSurface);
 
 	// load image and optimize
-	extern SDL_Surface *loadImage(char fileName[]);
+	SDL_Surface *loadImage(char fileName[]);
 
 	// SDL image wrapper
-	extern SDL_Texture *loadTexture(const char filename[]);
+	SDL_Texture *loadTexture(const char filename[]);
 
 	// free memory and quit SDL subsytems
-	extern bool close();
+	bool close();
 
 } // end namespace
