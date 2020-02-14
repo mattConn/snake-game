@@ -4,6 +4,7 @@
 #include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <fstream>
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
@@ -31,6 +32,14 @@ int main(int argc, char* argv[])
 
 	// hide cursor
 	SDL_ShowCursor(SDL_DISABLE);
+
+	// log moves
+	bool saveReplay = true;
+
+	// file to log to
+	std::ofstream replayFile;
+	if(saveReplay)
+		replayFile.open(useful::getDateString() + ".replay");
 
 	// containers
 	// ==========
@@ -65,6 +74,7 @@ int main(int argc, char* argv[])
 	std::vector<gameObj> scoreObjs;
 	std::vector<gameObj> highscoreObjs;
 
+	// set up score obj rects
 	for(int i = 0; i < 3; i++)
 	{
 		scoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i * (game::SQUARE/2), 0) );
@@ -98,6 +108,7 @@ int main(int argc, char* argv[])
 	int score = 0;
 	int highscore = 0;
 
+
 	// event handler
 	SDL_Event event;
 
@@ -110,6 +121,7 @@ int main(int argc, char* argv[])
 	bool playerDeathRoutineRan = false; // for running death routine only once
 
 	DEBUG_MSG("entering game loop");
+
 	// game loop
 	//===========
 	while (!quit)
@@ -165,6 +177,10 @@ int main(int argc, char* argv[])
 			// check for new player move, record move
 			if(player.lastMove != playerMove)
 			{
+				// log move
+				if(saveReplay)
+					replayFile << player.lastMove << " " << player.rect.x << " " << player.rect.y << "\n";
+
 				for(auto &b : snakeBody)
 					b.moveSeq.push_back({{player.rect.x,player.rect.y}, player.lastMove});
 			}
@@ -279,8 +295,13 @@ int main(int argc, char* argv[])
 				snakeBody.push_back(bodyBlock);
 
 				// new food position
-				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
+				food.rect.x = useful::randomInt((game::SCREEN_WIDTH - food.rect.w) + (SDL_GetTicks() % 10));
 				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
+
+				// log food position
+				if(saveReplay)
+					replayFile << "F " << std::to_string(food.rect.x) + " " + std::to_string(food.rect.y) + "\n";
+
 			} // end food intersection routine
 
 			// screen edge collision
@@ -342,6 +363,10 @@ int main(int argc, char* argv[])
 				// new food position
 				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
 				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
+
+				// log food position
+				replayFile << "F " << std::to_string(food.rect.x) + " " + std::to_string(food.rect.y) + "\n";
+
 
 				playerDeathRoutineRan = true;
 			}

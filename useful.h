@@ -3,15 +3,12 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <fstream>
 
 namespace useful {
 
 	// function prototypes
 	// ===================
-
-	// write data to file
-	template <class T>
-	bool writeToFile(const std::string &fileName, const T &data);
 
 	// return current datestring
 	std::string getDateString();
