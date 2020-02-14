@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 
 	// player life state bools
 	bool playerIsDead = true;
-	int playerDeathTimeout;
+	int playerDeathTimeout = 0;
 	bool playerDeathRoutineRan = false; // for running death routine only once
 
 	DEBUG_MSG("entering game loop");
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
 			} // end food intersection routine
 
 			// screen edge collision
-			if(player.rect.getRectL() <= 0 || player.rect.getRectR() >= game::SCREEN_WIDTH || player.rect.getRectTop() <= 0 || player.rect.getRectBottom() >= game::SCREEN_HEIGHT)
+			if(player.rect.getL() <= 0 || player.rect.getR() >= game::SCREEN_WIDTH || player.rect.getTop() <= 0 || player.rect.getBottom() >= game::SCREEN_HEIGHT)
 			playerIsDead = true;
 
 			// collision with self

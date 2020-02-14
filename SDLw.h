@@ -19,10 +19,10 @@ namespace SDLw {
 		rect(const int &X, const int &Y, const int &W, const int &H){ x = X; y = Y; w = W; h = H;};
 
 		void setPos(const int& X, const int& Y){ x = X; y = Y; }
-		int getRectTop() const { return y; }
-		int getRectBottom() const { return y + h; }
-		int getRectL() const { return x; }
-		int getRectR() const { return x + w; }
+		int getTop() const { return y; }
+		int getBottom() const { return y + h; }
+		int getL() const { return x; }
+		int getR() const { return x + w; }
 	
 	};
 

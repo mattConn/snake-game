@@ -41,7 +41,7 @@ gameObj::gameObj(const gameObj& other, const int &xPos, const int &yPos)
 };
 
 bool gameObj::isOffscreen() const {
-	if (rect.getRectR() < 0 || rect.getRectL() > game::SCREEN_WIDTH || rect.getRectTop() > game::SCREEN_HEIGHT || rect.getRectBottom() < 0)
+	if (rect.getR() < 0 || rect.getL() > game::SCREEN_WIDTH || rect.getTop() > game::SCREEN_HEIGHT || rect.getBottom() < 0)
 		return true;
 	return false;
 };
