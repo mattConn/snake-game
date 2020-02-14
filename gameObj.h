@@ -6,7 +6,10 @@
 #include <string>
 #include <list>
 #include <utility>
-#include "global.h"
+#include "SDLw.h"
+#include "game.h"
+#include "useful.h"
+
 #include "debug.h"
 
 

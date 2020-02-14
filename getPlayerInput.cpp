@@ -1,4 +1,7 @@
-#include "global.h"
+#include "SDLw.h"
+#include "game.h"
+#include "useful.h"
+
 #include "gameObj.h"
 #include <SDL2/SDL.h>
 
@@ -15,25 +18,25 @@ void getPlayerInput(gameObj& player, const Uint8* keyState)
 		// if last move was left/right, ignore left/right inputs
 		if(!wasPressed)
 		{
-			if(player.lastMove == global::LEFT || player.lastMove == global::RIGHT)
+			if(player.lastMove == game::LEFT || player.lastMove == game::RIGHT)
 			{
 				// move up
 				if (keyState[SDL_SCANCODE_UP])
-					player.lastMove = global::UP;
+					player.lastMove = game::UP;
 
 				// move down
 				if (keyState[SDL_SCANCODE_DOWN])
-					player.lastMove = global::DOWN;
+					player.lastMove = game::DOWN;
 			}
 			else
 			{
 				// move left
 				if (keyState[SDL_SCANCODE_LEFT])
-					player.lastMove = global::LEFT;
+					player.lastMove = game::LEFT;
 
 				// move right
 				if (keyState[SDL_SCANCODE_RIGHT])
-					player.lastMove = global::RIGHT;
+					player.lastMove = game::RIGHT;
 			}
 		}
 

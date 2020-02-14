@@ -10,7 +10,10 @@
 #undef main
 
 #include "debug.h"
-#include "global.h"
+#include "SDLw.h"
+#include "game.h"
+#include "useful.h"
+
 #include "gameObj.h"
 #include "updateObjPos.h"
 
@@ -20,7 +23,7 @@
 int main(int argc, char* argv[])
 {
 	// init sdl
-	if (!global::init(global::window, global::windowSurface))
+	if (!SDLw::init(SDLw::window, SDLw::windowSurface))
 	{
 		DEBUG_MSG("Init failed");
 		return -1;
@@ -33,39 +36,39 @@ int main(int argc, char* argv[])
 	// ==========
 
 	// load textures
-	global::allTextures["head-up"] = global::loadTexture("assets/head-up.png");
-	global::allTextures["head-right"] = global::loadTexture("assets/head-right.png");
-	global::allTextures["head-down"] = global::loadTexture("assets/head-down.png");
-	global::allTextures["head-left"] = global::loadTexture("assets/head-left.png");
-	global::allTextures["body"] = global::loadTexture("assets/body.png");
-	global::allTextures["food"] = global::loadTexture("assets/food.png");
-	global::allTextures["0"] = global::loadTexture("assets/0.png");
-	global::allTextures["1"] = global::loadTexture("assets/1.png");
-	global::allTextures["2"] = global::loadTexture("assets/2.png");
-	global::allTextures["3"] = global::loadTexture("assets/3.png");
-	global::allTextures["4"] = global::loadTexture("assets/4.png");
-	global::allTextures["5"] = global::loadTexture("assets/5.png");
-	global::allTextures["6"] = global::loadTexture("assets/6.png");
-	global::allTextures["7"] = global::loadTexture("assets/7.png");
-	global::allTextures["8"] = global::loadTexture("assets/8.png");
-	global::allTextures["9"] = global::loadTexture("assets/9.png");
-	//for(int i = 0; i < 10; i++) global::allTextures[std::to_string(i)] = global::loadTexture(std::string(std::to_string(i)+".png").c_str());
+	game::allTextures["head-up"] = SDLw::loadTexture("assets/head-up.png");
+	game::allTextures["head-right"] = SDLw::loadTexture("assets/head-right.png");
+	game::allTextures["head-down"] = SDLw::loadTexture("assets/head-down.png");
+	game::allTextures["head-left"] = SDLw::loadTexture("assets/head-left.png");
+	game::allTextures["body"] = SDLw::loadTexture("assets/body.png");
+	game::allTextures["food"] = SDLw::loadTexture("assets/food.png");
+	game::allTextures["0"] = SDLw::loadTexture("assets/0.png");
+	game::allTextures["1"] = SDLw::loadTexture("assets/1.png");
+	game::allTextures["2"] = SDLw::loadTexture("assets/2.png");
+	game::allTextures["3"] = SDLw::loadTexture("assets/3.png");
+	game::allTextures["4"] = SDLw::loadTexture("assets/4.png");
+	game::allTextures["5"] = SDLw::loadTexture("assets/5.png");
+	game::allTextures["6"] = SDLw::loadTexture("assets/6.png");
+	game::allTextures["7"] = SDLw::loadTexture("assets/7.png");
+	game::allTextures["8"] = SDLw::loadTexture("assets/8.png");
+	game::allTextures["9"] = SDLw::loadTexture("assets/9.png");
+	//for(int i = 0; i < 10; i++) game::allTextures[std::to_string(i)] = SDLw::loadTexture(std::string(std::to_string(i)+".png").c_str());
 
 
 	// make player 
 	// ===========
 
 	// construct player
-	gameObj player = gameObj("head-up", 5, global::SQUARE, global::SQUARE, global::SCREEN_WIDTH / 2 - 10 / 2, global::SCREEN_HEIGHT / 2 - 100 / 2);
-	player.lastMove = global::UP;
+	gameObj player = gameObj("head-up", 5, game::SQUARE, game::SQUARE, game::SCREEN_WIDTH / 2 - 10 / 2, game::SCREEN_HEIGHT / 2 - 100 / 2);
+	player.lastMove = game::UP;
 
 	std::vector<gameObj> scoreObjs;
 	std::vector<gameObj> highscoreObjs;
 
 	for(int i = 0; i < 3; i++)
 	{
-		scoreObjs.push_back( gameObj(std::to_string(0), 0, global::SQUARE/2, global::SQUARE/2, i * (global::SQUARE/2), 0) );
-		highscoreObjs.push_back( gameObj(std::to_string(0), 0, global::SQUARE/2, global::SQUARE/2, i*(global::SQUARE/2) + global::SCREEN_WIDTH - (global::SQUARE/2)*3, 0) );
+		scoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i * (game::SQUARE/2), 0) );
+		highscoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i*(game::SQUARE/2) + game::SCREEN_WIDTH - (game::SQUARE/2)*3, 0) );
 	}
 
 	
@@ -76,13 +79,13 @@ int main(int argc, char* argv[])
 	// Once it reahes that x,y, it's lastMove will be updated to the move in moveSeq.front().
 	// That pair in moveSeq will then be popped off moveSeq front.
 
-	gameObj bodyBlock = gameObj("body", player.velocity, global::SQUARE, global::SQUARE, 0, 0);
+	gameObj bodyBlock = gameObj("body", player.velocity, game::SQUARE, game::SQUARE, 0, 0);
 
 	// snake body blocks
 	std::vector<gameObj> snakeBody;
 
 	// construct food
-	gameObj food = gameObj("food", 0, global::SQUARE, global::SQUARE, 0, 0);
+	gameObj food = gameObj("food", 0, game::SQUARE, game::SQUARE, 0, 0);
 
 	// set background
 	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
@@ -145,7 +148,7 @@ int main(int argc, char* argv[])
 		// ============
 
 		// clear window
-		SDL_RenderClear(global::renderer);
+		SDL_RenderClear(SDLw::renderer);
 
 		// player alive routine
 		// ====================
@@ -179,28 +182,28 @@ int main(int argc, char* argv[])
 
 					switch(b.lastMove)
 					{
-						case global::UP:
+						case game::UP:
 							if(xy.second >= b.rect.y)
 							{
 								b.lastMove = b.moveSeq.front().second;
 								b.moveSeq.pop_front();
 							}
 						break;
-						case global::DOWN:
+						case game::DOWN:
 							if(xy.second <= b.rect.y)
 							{
 								b.lastMove = b.moveSeq.front().second;
 								b.moveSeq.pop_front();
 							}
 						break;
-						case global::LEFT:
+						case game::LEFT:
 							if(xy.first >= b.rect.x)
 							{
 								b.lastMove = b.moveSeq.front().second;
 								b.moveSeq.pop_front();
 							}
 						break;
-						case global::RIGHT:
+						case game::RIGHT:
 							if(xy.first <= b.rect.x)
 							{
 								b.lastMove = b.moveSeq.front().second;
@@ -223,19 +226,19 @@ int main(int argc, char* argv[])
 			// set player texture
 			switch(player.lastMove)
 			{
-				case global::UP:
+				case game::UP:
 					player.currentTexture = "head-up";
 				break;
 
-				case global::DOWN:
+				case game::DOWN:
 					player.currentTexture = "head-down";
 				break;
 
-				case global::LEFT:
+				case game::LEFT:
 					player.currentTexture = "head-left";
 				break;
 
-				case global::RIGHT:
+				case game::RIGHT:
 					player.currentTexture = "head-right";
 				break;
 			}
@@ -276,12 +279,12 @@ int main(int argc, char* argv[])
 				snakeBody.push_back(bodyBlock);
 
 				// new food position
-				food.rect.x = global::randomInt(global::SCREEN_WIDTH - food.rect.w);
-				food.rect.y = global::randomInt(global::SCREEN_HEIGHT - food.rect.h);
+				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
+				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
 			} // end food intersection routine
 
 			// screen edge collision
-			if(player.getRectL() <= 0 || player.getRectR() >= global::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= global::SCREEN_HEIGHT)
+			if(player.getRectL() <= 0 || player.getRectR() >= game::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= game::SCREEN_HEIGHT)
 			playerIsDead = true;
 
 			// collision with self
@@ -295,21 +298,21 @@ int main(int argc, char* argv[])
 
 			// render score
 			for(auto &s : scoreObjs)
-				global::render(s.currentTexture, &s.rect);
+				SDLw::render(s.currentTexture, &s.rect);
 
 			for(auto &s : highscoreObjs)
-				global::render(s.currentTexture, &s.rect);
+				SDLw::render(s.currentTexture, &s.rect);
 
 
 			// render player
-			global::render(player.currentTexture, &player.rect);
+			SDLw::render(player.currentTexture, &player.rect);
 
 			// render food 
-			global::render(food.currentTexture, &food.rect);
+			SDLw::render(food.currentTexture, &food.rect);
 
 			// render snake body
 			for(auto &b : snakeBody)
-				global::render(b.currentTexture, &b.rect);
+				SDLw::render(b.currentTexture, &b.rect);
 
 			
 		}
@@ -327,7 +330,7 @@ int main(int argc, char* argv[])
 				player.rect.y = player.initialY;
 
 				// reset last move
-				player.lastMove = global::UP;
+				player.lastMove = game::UP;
 
 				// reset snake body
 				snakeBody.clear();
@@ -337,8 +340,8 @@ int main(int argc, char* argv[])
 				snakeBody.push_back(bodyBlock);
 
 				// new food position
-				food.rect.x = global::randomInt(global::SCREEN_WIDTH - food.rect.w);
-				food.rect.y = global::randomInt(global::SCREEN_HEIGHT - food.rect.h);
+				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
+				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
 
 				playerDeathRoutineRan = true;
 			}
@@ -354,7 +357,7 @@ int main(int argc, char* argv[])
 		// render current textures
 		renderPresent:
 
-		SDL_RenderPresent(global::renderer);
+		SDL_RenderPresent(SDLw::renderer);
 
 		SDL_Delay(16);
 	}
@@ -363,7 +366,7 @@ int main(int argc, char* argv[])
 	// end game loop
 
 	// close SDL subsystems
-	global::close();
+	SDLw::close();
 
 	DEBUG_MSG("Score: " << score);
 	DEBUG_MSG("Highscore: " << highscore);

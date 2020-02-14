@@ -5,23 +5,23 @@ void updateObjPos(gameObj& obj)
 {
 	switch(obj.lastMove)
 	{
-		case global::UP:
+		case game::UP:
 			if(obj.getRectTop() > 0)
 				obj.rect.y += (-obj.velocity * obj.velocityMod);
 		break;
 
-		case global::DOWN:
-			if(obj.getRectBottom() < global::SCREEN_HEIGHT)
+		case game::DOWN:
+			if(obj.getRectBottom() < game::SCREEN_HEIGHT)
 				obj.rect.y += (obj.velocity * obj.velocityMod);
 		break;
 
-		case global::LEFT:
+		case game::LEFT:
 			if(obj.getRectL() > 0)
 				obj.rect.x += (-obj.velocity * obj.velocityMod);
 		break;
 
-		case global::RIGHT:
-			if(obj.getRectR() < global::SCREEN_WIDTH)
+		case game::RIGHT:
+			if(obj.getRectR() < game::SCREEN_WIDTH)
 				obj.rect.x += (obj.velocity * obj.velocityMod);
 		break;
 	}

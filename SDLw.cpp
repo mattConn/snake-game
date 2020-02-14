@@ -1,4 +1,7 @@
-#include "global.h"
+#include "SDLw.h"
+#include "game.h"
+#include "useful.h"
+
 #include "debug.h"
 #include <cstdlib>
 #include <ctime>
@@ -10,56 +13,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-namespace global {
+// SDL wrappers
 
-const Uint8 SCREEN_WINDOWED = 0;
-const Uint8 SCREEN_FULL = SDL_WINDOW_FULLSCREEN;
-Uint8 screenMode = SCREEN_WINDOWED;
-
-const int SCREEN_WIDTH = 320;
-const int SCREEN_HEIGHT = SCREEN_WIDTH;
-
-const int SQUARE = SCREEN_WIDTH == SCREEN_HEIGHT ? SCREEN_WIDTH / 16 : 0;
+namespace SDLw {
 
 SDL_Window *window = nullptr; // main window
 SDL_Surface *windowSurface = nullptr; // surface for main window
 SDL_Renderer *renderer = nullptr; // main renderer
 
-std::map<std::string, SDL_Texture*> allTextures;
-
 
 // functions
 // =========
 
-// write data to file
-template <class T>
-bool writeToFile(const std::string &fileName, const T &data)
-{
-	std::ofstream file;
-	file.open(fileName);
-
-	if(!file) return false;
-
-	file << data;
-
-	return true;
-}
-
-// return current datestring
-std::string getDateString()
-{
-	time_t t = std::time(NULL);
-	std::string dateString = std::string(std::ctime(&t));
-	dateString[dateString.size()-1] = '\0';
-	return dateString;
-}
-
-// generate random int over inclusive range
-int randomInt(const int &max, const int &min)
-{
-	std::srand(SDL_GetTicks()); 
-	return std::rand() % max + min;
-}
 
 // SDL rect wrapper
 SDL_Rect makeRect(const int &xPos, const int &yPos, const int &width, const int &height)
@@ -76,7 +41,7 @@ SDL_Rect makeRect(const int &xPos, const int &yPos, const int &width, const int 
 
 bool render(const std::string texture, const SDL_Rect *rect)
 {
-	if (SDL_RenderCopy(global::renderer, global::allTextures[texture], nullptr, rect) == 0)
+	if (SDL_RenderCopy(renderer, game::allTextures[texture], nullptr, rect) == 0)
 		return true;
 	else
 		return false;
@@ -106,8 +71,8 @@ bool init(SDL_Window *&window, SDL_Surface *&windowSurface)
 	window = SDL_CreateWindow("Snake",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		SCREEN_WIDTH,
-		SCREEN_HEIGHT,
+		game::SCREEN_WIDTH,
+		game::SCREEN_HEIGHT,
 		SDL_WINDOW_SHOWN);
 
 	if (window == nullptr)
@@ -115,7 +80,7 @@ bool init(SDL_Window *&window, SDL_Surface *&windowSurface)
 		DEBUG_MSG("SDL window creation error: " << SDL_GetError());
 		return false;
 	}
-	DEBUG_MSG("Created window: w: " << SCREEN_WIDTH << " h: " << SCREEN_HEIGHT );
+	DEBUG_MSG("Created window: w: " << game::SCREEN_WIDTH << " h: " << game::SCREEN_HEIGHT );
 
 	// init renderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -196,7 +161,7 @@ bool close()
 	SDL_DestroyRenderer(renderer);
 
 	// Destroy textures
-	for (auto &texture : allTextures)
+	for (auto &texture : game::allTextures)
 		SDL_DestroyTexture(texture.second);
 
 	//Quit SDL subsystems
