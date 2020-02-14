@@ -19,7 +19,7 @@ class gameObj {
 	public:
 
 	std::string textureString;
-	SDL_Rect rect; // obj rect (used for coordinates)
+	SDLw::rect rect; // obj rect (used for coordinates)
 
 	double velocity = 1;
 
@@ -29,10 +29,6 @@ class gameObj {
 
 	bool isOffscreen() const;
 
-	int getRectTop() const { return rect.y; }
-	int getRectBottom() const { return rect.y + rect.h; }
-	int getRectL() const { return rect.x; }
-	int getRectR() const { return rect.x + rect.w; }
 
 	void setInitialPos(const int& x, const int& y)
 	{
@@ -40,11 +36,6 @@ class gameObj {
 		initialY = y;
 	}
 
-	void setPos(const int& x, const int& y)
-	{
-		rect.x = x;
-		rect.y = y;
-	}
 
 	// default constructor
 	gameObj();

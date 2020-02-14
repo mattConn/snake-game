@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
 			} // end food intersection routine
 
 			// screen edge collision
-			if(player.getRectL() <= 0 || player.getRectR() >= game::SCREEN_WIDTH || player.getRectTop() <= 0 || player.getRectBottom() >= game::SCREEN_HEIGHT)
+			if(player.rect.getRectL() <= 0 || player.rect.getRectR() >= game::SCREEN_WIDTH || player.rect.getRectTop() <= 0 || player.rect.getRectBottom() >= game::SCREEN_HEIGHT)
 			playerIsDead = true;
 
 			// collision with self

@@ -14,7 +14,7 @@
 // default constructor
 gameObj::gameObj()
 {
-	rect = SDLw::makeRect(0, 0, 1, 1);
+	rect = SDLw::rect(0, 0, 1, 1);
 };
 
 // detailed constructor
@@ -23,7 +23,7 @@ gameObj::gameObj(std::string t, const double& vel, const int &width, const int &
 {
 	textureString = t;
 	velocity = vel;
-	rect = SDLw::makeRect(xPos, yPos, width, height);
+	rect = SDLw::rect(xPos, yPos, width, height);
 	initialX = xPos;
 	initialY = yPos;
 };
@@ -35,13 +35,13 @@ gameObj::gameObj(const gameObj& other, const int &xPos, const int &yPos)
 	textureString = other.textureString;
 	velocity = other.velocity;
 	
-	rect = SDLw::makeRect(xPos, yPos, other.rect.w, other.rect.h);
+	rect = SDLw::rect(xPos, yPos, other.rect.w, other.rect.h);
 	initialX = rect.x;
 	initialY = rect.y;
 };
 
 bool gameObj::isOffscreen() const {
-	if (getRectR() < 0 || getRectL() > game::SCREEN_WIDTH || getRectTop() > game::SCREEN_HEIGHT || getRectBottom() < 0)
+	if (rect.getRectR() < 0 || rect.getRectL() > game::SCREEN_WIDTH || rect.getRectTop() > game::SCREEN_HEIGHT || rect.getRectBottom() < 0)
 		return true;
 	return false;
 };

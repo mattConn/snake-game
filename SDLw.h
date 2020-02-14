@@ -12,11 +12,22 @@ namespace SDLw {
 	extern SDL_Surface *windowSurface; // surface for main window
 	extern SDL_Renderer *renderer; // main renderer
 
+	class rect : public SDL_Rect {
+		public:
+
+		rect(){x = y = w = h = 0;}; // default constructor
+		rect(const int &X, const int &Y, const int &W, const int &H){ x = X; y = Y; w = W; h = H;};
+
+		void setPos(const int& X, const int& Y){ x = X; y = Y; }
+		int getRectTop() const { return y; }
+		int getRectBottom() const { return y + h; }
+		int getRectL() const { return x; }
+		int getRectR() const { return x + w; }
+	
+	};
+
 	// function prototypes
 	// ===================
-
-	// SDL rect wrapper
-	SDL_Rect makeRect(const int &x, const int &y, const int &w, const int &h);
 
 	// SDL_RenderCopy wrapper
 	bool render(const std::string texture, const SDL_Rect* rect);
