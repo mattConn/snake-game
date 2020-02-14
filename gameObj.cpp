@@ -21,7 +21,7 @@ gameObj::gameObj()
 // takes texture string, velocity, width, height, xPos, yPos
 gameObj::gameObj(std::string t, const double& vel, const int &width, const int &height, const int &xPos,const int &yPos) 
 {
-	currentTexture = t;
+	textureString = t;
 	velocity = vel;
 	rect = SDLw::makeRect(xPos, yPos, width, height);
 	initialX = xPos;
@@ -32,7 +32,7 @@ gameObj::gameObj(std::string t, const double& vel, const int &width, const int &
 // takes rhs gameObj, xPos, yPos
 gameObj::gameObj(const gameObj& other, const int &xPos, const int &yPos)
 {
-	currentTexture = other.currentTexture;
+	textureString = other.textureString;
 	velocity = other.velocity;
 	
 	rect = SDLw::makeRect(xPos, yPos, other.rect.w, other.rect.h);

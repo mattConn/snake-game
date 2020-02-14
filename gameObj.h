@@ -18,7 +18,7 @@
 class gameObj {
 	public:
 
-	std::string currentTexture;
+	std::string textureString;
 
 	int lastMove;
 

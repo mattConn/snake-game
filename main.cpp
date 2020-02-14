@@ -227,19 +227,19 @@ int main(int argc, char* argv[])
 			switch(player.lastMove)
 			{
 				case game::UP:
-					player.currentTexture = "head-up";
+					player.textureString = "head-up";
 				break;
 
 				case game::DOWN:
-					player.currentTexture = "head-down";
+					player.textureString = "head-down";
 				break;
 
 				case game::LEFT:
-					player.currentTexture = "head-left";
+					player.textureString = "head-left";
 				break;
 
 				case game::RIGHT:
-					player.currentTexture = "head-right";
+					player.textureString = "head-right";
 				break;
 			}
 
@@ -255,14 +255,14 @@ int main(int argc, char* argv[])
 				// update score textures
 				for(int i = scoreObjs.size()-1; i > -1; i--)
 				{
-					scoreObjs[i].currentTexture = std::to_string(scoreTmp % 10);
+					scoreObjs[i].textureString = std::to_string(scoreTmp % 10);
 					scoreTmp /= 10;
 				}
 
 				// update highscore textures
 				for(int i = highscoreObjs.size()-1; i > -1; i--)
 				{
-					highscoreObjs[i].currentTexture = std::to_string(highscoreTmp % 10);
+					highscoreObjs[i].textureString = std::to_string(highscoreTmp % 10);
 					highscoreTmp /= 10;
 				}
 				
@@ -298,21 +298,21 @@ int main(int argc, char* argv[])
 
 			// render score
 			for(auto &s : scoreObjs)
-				SDLw::render(s.currentTexture, &s.rect);
+				SDLw::render(s.textureString, &s.rect);
 
 			for(auto &s : highscoreObjs)
-				SDLw::render(s.currentTexture, &s.rect);
+				SDLw::render(s.textureString, &s.rect);
 
 
 			// render player
-			SDLw::render(player.currentTexture, &player.rect);
+			SDLw::render(player.textureString, &player.rect);
 
 			// render food 
-			SDLw::render(food.currentTexture, &food.rect);
+			SDLw::render(food.textureString, &food.rect);
 
 			// render snake body
 			for(auto &b : snakeBody)
-				SDLw::render(b.currentTexture, &b.rect);
+				SDLw::render(b.textureString, &b.rect);
 
 			
 		}
@@ -323,7 +323,7 @@ int main(int argc, char* argv[])
 				score = 0; // reset score
 
 				for(int i = 0; i < scoreObjs.size(); i++)
-					scoreObjs[i].currentTexture = "0";
+					scoreObjs[i].textureString = "0";
 
 				// reset position
 				player.rect.x = player.initialX;
