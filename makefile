@@ -1,5 +1,6 @@
-snake-game: *.cpp
-	clang++ -std=c++11 -I /usr/include/SDL2/ -l SDL2 -l SDL2_image $^ -o $@
+snake-game: *.c
+	gcc -I/usr/include/SDL2 $^ -o $@ -lSDL2 -lSDL2_image
+
 
 check:
 	./snake-game
