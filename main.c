@@ -12,6 +12,7 @@
 #define NUM_TEXTURES 16
 #define TILE_W 16
 #define TILE_H 16
+#define EMPTY -1
 
 int main(int argc, char* argv[])
 {
@@ -38,12 +39,6 @@ int main(int argc, char* argv[])
 
 	// game textures
 	SDL_Texture *textures[NUM_TEXTURES] = {
-		IMG_LoadTexture(renderer, "assets/head-up.png"),
-		IMG_LoadTexture(renderer, "assets/head-down.png"),
-		IMG_LoadTexture(renderer, "assets/head-left.png"),
-		IMG_LoadTexture(renderer, "assets/head-right.png"),
-		IMG_LoadTexture(renderer, "assets/body.png"),
-		IMG_LoadTexture(renderer, "assets/food.png"),
 		IMG_LoadTexture(renderer, "assets/0.png"),
 		IMG_LoadTexture(renderer, "assets/1.png"),
 		IMG_LoadTexture(renderer, "assets/2.png"),
@@ -53,9 +48,17 @@ int main(int argc, char* argv[])
 		IMG_LoadTexture(renderer, "assets/6.png"),
 		IMG_LoadTexture(renderer, "assets/7.png"),
 		IMG_LoadTexture(renderer, "assets/8.png"),
-		IMG_LoadTexture(renderer, "assets/9.png")
+		IMG_LoadTexture(renderer, "assets/9.png"),
+		IMG_LoadTexture(renderer, "assets/head-up.png"),
+		IMG_LoadTexture(renderer, "assets/head-down.png"),
+		IMG_LoadTexture(renderer, "assets/head-left.png"),
+		IMG_LoadTexture(renderer, "assets/head-right.png"),
+		IMG_LoadTexture(renderer, "assets/body.png"),
+		IMG_LoadTexture(renderer, "assets/food.png")
 	};
 	for(int i=0;i<NUM_TEXTURES;i++) if(!textures[i]) return 't';
+
+	typedef enum Texture {HEAD_UP = 10, HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, BODY, FOOD} texture;
 
 	// moves
 	typedef enum Moves {UP, DOWN, LEFT, RIGHT, MAX_MOVES} moves;
@@ -72,6 +75,7 @@ int main(int argc, char* argv[])
 	player.w = TILE_W;
 	player.h = TILE_H;
 	int playerMove = UP;
+	int playerTexture = HEAD_UP;
 
 	SDL_Rect scoreRects[3];
 	SDL_Rect highscoreRects[3];
@@ -93,7 +97,20 @@ int main(int argc, char* argv[])
 
 	// snake blocks	
 	SDL_Rect snakeBody[399];
-	int snakeBodyIndex = 0;
+	int sbIndex = 0;
+
+	// snake body move sequence, deref with sbIndex
+	// array of arrays of x,y,move
+	// each array for one snake block
+	// 1000 moves?
+	int moveSeq[399][1000][3];
+	for(int i=0; i < 399;i++)
+	for(int j=0; j < 1000;j++)
+	{
+		moveSeq[i][j][0] = EMPTY; // x
+		moveSeq[i][j][1] = EMPTY; // y
+		moveSeq[i][j][2] = EMPTY; // move
+	}
 
 	// construct food
 	SDL_Rect food = player;
@@ -123,7 +140,7 @@ int main(int argc, char* argv[])
 		// event polling loop
 		while (SDL_PollEvent(&event))
 		{
-		// window close event
+			// window close event
 			if (event.type == SDL_QUIT)
 			{
 				quit = true;
@@ -135,49 +152,122 @@ int main(int argc, char* argv[])
 			{
 				switch (event.key.keysym.sym)
 				{
-				case SDLK_ESCAPE: // pause
-					paused = paused ? false : true;
-					break;
+					case SDLK_ESCAPE: // pause
+						paused = paused ? false : true;
+						break;
 
-				case SDLK_RETURN: // quit
-					quit = true;
-					break;
+					case SDLK_RETURN: // quit
+						quit = true;
+						break;
 				}
 			} // end get keyboard events
 		} // end poll events
 
 
-		/*
 		// skip scene updating when paused
 		if (paused) goto renderPresent;
 
 		// update scene
-		// ============
 
 		// clear window
-		SDL_RenderClear(SDLw::renderer);
+		SDL_RenderClear(renderer);
 
 		// player alive routine
-		// ====================
 		if (!playerIsDead)
 		{
 			playerDeathTimeout = SDL_GetTicks() + 800; // keep updating death timeout
 
 			// save player move
-			int playerMove = player.lastMove;
+			int playerLastMove = playerMove;
 
 			// get input
-			getPlayerInput(player, keyState);
+			static bool wasPressed = false;
+			if (keyState[SDL_SCANCODE_UP] || keyState[SDL_SCANCODE_DOWN] || keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT])
+			{
+				// if last move was left/right, ignore left/right inputs
+				if(!wasPressed)
+				{
+					if(playerMove == LEFT || playerMove == RIGHT)
+					{
+						// move up
+						if (keyState[SDL_SCANCODE_UP])
+							playerMove = UP;
+
+						// move down
+						if (keyState[SDL_SCANCODE_DOWN])
+							playerMove = DOWN;
+					}
+					else
+					{
+						// move left
+						if (keyState[SDL_SCANCODE_LEFT])
+							playerMove = LEFT;
+
+						// move right
+						if (keyState[SDL_SCANCODE_RIGHT])
+							playerMove = RIGHT;
+					}
+				}
+
+				wasPressed = true;
+			}
+			else
+				wasPressed = false;
+
+			// end get input
 
 			// check for new player move, record move
-			if(player.lastMove != playerMove)
+			if(playerMove != playerLastMove)
 			{
-				for(auto &b : snakeBody)
-					b.moveSeq.push_back({{player.rect.x,player.rect.y}, player.lastMove});
+				for(int i=0; i < sbIndex; i++)
+				{
+					// find next available point
+					int j = 0;
+					while(moveSeq[sbIndex][j][0] != EMPTY) j++;
+
+					// store x,y,move
+					moveSeq[sbIndex][j][0] = player.x;
+					moveSeq[sbIndex][j][0] = player.y;
+					moveSeq[sbIndex][j][0] = playerMove;
+				}
 			}
 
-			// update player pos
-			updateObjPos(player);
+			// update player pos and texture
+			switch(playerMove)
+			{
+				case UP:
+					if(player.y > 0)
+					{
+						player.y -= VELOCITY;
+						playerTexture = HEAD_UP;
+					}
+				break;
+
+				case DOWN:
+					if(player.y+player.h < SCREEN_H)
+					{
+						player.y += VELOCITY;
+						playerTexture = HEAD_DOWN;
+					}
+				break;
+
+				case LEFT:
+					if(player.x > 0)
+					{
+						player.x -= VELOCITY;
+						playerTexture = HEAD_LEFT;
+					}
+				break;
+
+				case RIGHT:
+					if(player.x+player.w < SCREEN_W)
+					{
+						player.x += VELOCITY;
+						playerTexture = HEAD_RIGHT;
+					}
+				break;
+			}
+/*
 
 			// update snake block moveSeq 
 			for(auto &b : snakeBody)
@@ -221,26 +311,6 @@ int main(int argc, char* argv[])
 					}
 				} // end if moveSeq not empty
 				
-			}
-
-			// set player texture
-			switch(player.lastMove)
-			{
-				case game::UP:
-					player.textureString = "head-up";
-				break;
-
-				case game::DOWN:
-					player.textureString = "head-down";
-				break;
-
-				case game::LEFT:
-					player.textureString = "head-left";
-				break;
-
-				case game::RIGHT:
-					player.textureString = "head-right";
-				break;
 			}
 
 			// collect food
@@ -354,7 +424,7 @@ int main(int argc, char* argv[])
 			}
 		}
 */
-
+}//TMP
 		// render current textures
 		renderPresent:
 
