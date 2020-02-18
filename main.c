@@ -1,18 +1,23 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
 #undef main
+
+// constants
+#define VELOCITY 5
+#define SCREEN_W 320
+#define SCREEN_H 320
+#define NUM_TEXTURES 16
+#define TILE_W 16
+#define TILE_H 16
 
 int main(int argc, char* argv[])
 {
 	// init sdl
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) return 's';
 	if (!IMG_Init(IMG_INIT_PNG)) return 'i';
-
-	// screen dimensions
-	#define SCREEN_W 320
-	#define SCREEN_H 320
 
 	// create window
 	SDL_Window *window = SDL_CreateWindow("Snake",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_W,SCREEN_H,SDL_WINDOW_SHOWN);
@@ -31,7 +36,6 @@ int main(int argc, char* argv[])
 	// hide cursor
 	SDL_ShowCursor(SDL_DISABLE);
 
-	#define NUM_TEXTURES 16
 	// game textures
 	SDL_Texture *textures[NUM_TEXTURES] = {
 		IMG_LoadTexture(renderer, "assets/head-up.png"),
@@ -53,42 +57,46 @@ int main(int argc, char* argv[])
 	};
 	for(int i=0;i<NUM_TEXTURES;i++) if(!textures[i]) return 't';
 
+	// moves
+	typedef enum Moves {UP, DOWN, LEFT, RIGHT, MAX_MOVES} moves;
+
+	// screen is 320 x 320
+	// divided into 20 x 20 squares of 16 x 16
+	// every square filled = 20^2 squares = 400
+	// leave one out for the head = 399
 
 	// make player 
-	// ===========
+	SDL_Rect player;
+	player.x = SCREEN_W/2; // 160
+	player.y = SCREEN_H/2;
+	player.w = TILE_W;
+	player.h = TILE_H;
+	int playerMove = UP;
 
-/*
-	// construct player
-	gameObj player = gameObj("head-up", 5, game::SQUARE, game::SQUARE, game::SCREEN_WIDTH / 2 - 10 / 2, game::SCREEN_HEIGHT / 2 - 100 / 2);
-	player.lastMove = game::UP;
+	SDL_Rect scoreRects[3];
+	SDL_Rect highscoreRects[3];
 
-	std::vector<gameObj> scoreObjs;
-	std::vector<gameObj> highscoreObjs;
-
+	// position score rects in upper left
+	// position highscore rects in upper right
 	for(int i = 0; i < 3; i++)
 	{
-		scoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i * (game::SQUARE/2), 0) );
-		highscoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i*(game::SQUARE/2) + game::SCREEN_WIDTH - (game::SQUARE/2)*3, 0) );
+		scoreRects[i].w = TILE_W;
+		scoreRects[i].h = TILE_H;
+		scoreRects[i].y = 0;
+		scoreRects[i].x = i*(TILE_W/2);
+
+		highscoreRects[i].w = TILE_W;
+		highscoreRects[i].h = TILE_H;
+		highscoreRects[i].y = 0;
+		highscoreRects[i].x = i*(TILE_W/2) + SCREEN_W - (TILE_W/2)*3;
 	}
 
-	
-	// snake body block to be cloned
-	// =============================
-	// S body block needs a lastMove and a moveSeq.
-	// It will move in the direction of lastmove until it reaches the x,y in moveSeq.front().
-	// Once it reahes that x,y, it's lastMove will be updated to the move in moveSeq.front().
-	// That pair in moveSeq will then be popped off moveSeq front.
-
-	gameObj bodyBlock = gameObj("body", player.velocity, game::SQUARE, game::SQUARE, 0, 0);
-
-	// snake body blocks
-	std::vector<gameObj> snakeBody;
+	// snake blocks	
+	SDL_Rect snakeBody[399];
+	int snakeBodyIndex = 0;
 
 	// construct food
-	gameObj food = gameObj("food", 0, game::SQUARE, game::SQUARE, 0, 0);
-
-	// set background
-	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
+	SDL_Rect food = player;
 
 	// game state booleans
 	bool quit = false;
@@ -102,16 +110,14 @@ int main(int argc, char* argv[])
 	SDL_Event event;
 
 	// realtime keystate
-	const Uint8* keyState = SDL_GetKeyboardState(nullptr);
+	const Uint8* keyState = SDL_GetKeyboardState(NULL);
 
 	// player life state bools
 	bool playerIsDead = true;
 	int playerDeathTimeout = 0;
 	bool playerDeathRoutineRan = false; // for running death routine only once
 
-	DEBUG_MSG("entering game loop");
 	// game loop
-	//===========
 	while (!quit)
 	{
 		// event polling loop
@@ -141,6 +147,7 @@ int main(int argc, char* argv[])
 		} // end poll events
 
 
+		/*
 		// skip scene updating when paused
 		if (paused) goto renderPresent;
 
@@ -346,18 +353,18 @@ int main(int argc, char* argv[])
 				playerDeathRoutineRan = false;
 			}
 		}
+*/
 
 		// render current textures
 		renderPresent:
 
-		SDL_RenderPresent(SDLw::renderer);
+		SDL_RenderPresent(renderer);
 
 		SDL_Delay(16);
 	}
 
 	//==============
 	// end game loop
-*/
 
 	// clean up
 
