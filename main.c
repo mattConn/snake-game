@@ -92,6 +92,10 @@ int main(int argc, char* argv[])
 		highscoreRects[i].x = i*(TILE_W/2) + SCREEN_W - (TILE_W/2)*3;
 	}
 
+	// snake blocks
+	SDL_Rect *snakeBody = (SDL_Rect*) malloc(sizeof(SDL_Rect) * 10);
+	int sbIndex = 0;
+
 	/*
 	// snake blocks	
 	SDL_Rect snakeBody[399];
@@ -399,6 +403,8 @@ int main(int argc, char* argv[])
 	// end game loop
 
 	// clean up
+	free(snakeBody);
+	snakeBody = NULL;
 
     //Deallocate windowSurface
     SDL_FreeSurface(windowSurface);
