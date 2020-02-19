@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -58,15 +59,11 @@ int main(int argc, char* argv[])
 	};
 	for(int i=0;i<NUM_TEXTURES;i++) if(!textures[i]) return 't';
 
+	// textures enum
 	typedef enum Texture {HEAD_UP = 10, HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, BODY, FOOD} texture;
 
 	// moves
 	typedef enum Moves {UP, DOWN, LEFT, RIGHT, MAX_MOVES} moves;
-
-	// screen is 320 x 320
-	// divided into 20 x 20 squares of 16 x 16
-	// every square filled = 20^2 squares = 400
-	// leave one out for the head = 399
 
 	// make player 
 	SDL_Rect player;
@@ -84,12 +81,12 @@ int main(int argc, char* argv[])
 	// position highscore rects in upper right
 	for(int i = 0; i < 3; i++)
 	{
-		scoreRects[i].w = TILE_W;
+		scoreRects[i].w = TILE_W/2;
 		scoreRects[i].h = TILE_H;
 		scoreRects[i].y = 0;
 		scoreRects[i].x = i*(TILE_W/2);
 
-		highscoreRects[i].w = TILE_W;
+		highscoreRects[i].w = TILE_W/2;
 		highscoreRects[i].h = TILE_H;
 		highscoreRects[i].y = 0;
 		highscoreRects[i].x = i*(TILE_W/2) + SCREEN_W - (TILE_W/2)*3;
@@ -134,7 +131,7 @@ int main(int argc, char* argv[])
 	// player life state bools
 	bool playerIsDead = true;
 	int playerDeathTimeout = 0;
-	bool playerDeathRoutineRan = false; // for running death routine only once
+	bool playerDeathRoutineRan = false; // for running death routine only once per timeout
 
 	// game loop
 	while (!quit)
@@ -183,32 +180,18 @@ int main(int argc, char* argv[])
 			int playerLastMove = playerMove;
 
 			// get input
-			static bool wasPressed = false;
+			static bool wasPressed = false; // press debounce
 			if (keyState[SDL_SCANCODE_UP] || keyState[SDL_SCANCODE_DOWN] || keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT])
 			{
 				// if last move was left/right, ignore left/right inputs
 				if(!wasPressed)
 				{
+					// move up or down
 					if(playerMove == LEFT || playerMove == RIGHT)
-					{
-						// move up
-						if (keyState[SDL_SCANCODE_UP])
-							playerMove = UP;
-
-						// move down
-						if (keyState[SDL_SCANCODE_DOWN])
-							playerMove = DOWN;
-					}
+						playerMove = keyState[SDL_SCANCODE_UP] ? UP : DOWN;
+					// move left or right
 					else
-					{
-						// move left
-						if (keyState[SDL_SCANCODE_LEFT])
-							playerMove = LEFT;
-
-						// move right
-						if (keyState[SDL_SCANCODE_RIGHT])
-							playerMove = RIGHT;
-					}
+						playerMove = keyState[SDL_SCANCODE_LEFT] ? LEFT : RIGHT;
 				}
 
 				wasPressed = true;
@@ -240,35 +223,23 @@ int main(int argc, char* argv[])
 			switch(playerMove)
 			{
 				case UP:
-					if(player.y > 0)
-					{
-						player.y -= VELOCITY;
-						playerTexture = HEAD_UP;
-					}
+					player.y -= VELOCITY;
+					playerTexture = HEAD_UP;
 				break;
 
 				case DOWN:
-					if(player.y+player.h < SCREEN_H)
-					{
-						player.y += VELOCITY;
-						playerTexture = HEAD_DOWN;
-					}
+					player.y += VELOCITY;
+					playerTexture = HEAD_DOWN;
 				break;
 
 				case LEFT:
-					if(player.x > 0)
-					{
-						player.x -= VELOCITY;
-						playerTexture = HEAD_LEFT;
-					}
+					player.x -= VELOCITY;
+					playerTexture = HEAD_LEFT;
 				break;
 
 				case RIGHT:
-					if(player.x+player.w < SCREEN_W)
-					{
-						player.x += VELOCITY;
-						playerTexture = HEAD_RIGHT;
-					}
+					player.x += VELOCITY;
+					playerTexture = HEAD_RIGHT;
 				break;
 			}
 /*
@@ -327,22 +298,6 @@ int main(int argc, char* argv[])
 				int scoreTmp = score;
 				int highscoreTmp = highscore;
 /*
-				
-				// update score textures
-				for(int i = scoreObjs.size()-1; i > -1; i--)
-				{
-					scoreObjs[i].textureString = std::to_string(scoreTmp % 10);
-					scoreTmp /= 10;
-				}
-
-				// update highscore textures
-				for(int i = highscoreObjs.size()-1; i > -1; i--)
-				{
-					highscoreObjs[i].textureString = std::to_string(highscoreTmp % 10);
-					highscoreTmp /= 10;
-				}
-				
-
 				// increase snake body
 				// ===================
 
@@ -373,15 +328,18 @@ int main(int argc, char* argv[])
 			// translate snake body blocks
 			for(auto &b : snakeBody)
 				updateObjPos(b);
-
-			// render score
-			for(auto &s : scoreObjs)
-				SDLw::render(s.textureString, &s.rect);
-
-			for(auto &s : highscoreObjs)
-				SDLw::render(s.textureString, &s.rect);
 			*/
 
+			// render score
+			int tmpScore = score;
+			int tmpHighscore = highscore;
+			for(int i=2;i>=0;i--)
+			{
+				SDL_RenderCopy(renderer, textures[tmpScore%10], NULL, &scoreRects[i]);
+				SDL_RenderCopy(renderer, textures[tmpHighscore%10], NULL, &highscoreRects[i]);
+				tmpScore/=10;
+				tmpHighscore/=10;
+			}
 
 			// render player
 			SDL_RenderCopy(renderer, textures[playerTexture], NULL, &player);
@@ -402,11 +360,6 @@ int main(int argc, char* argv[])
 			if(!playerDeathRoutineRan)
 			{
 				score = 0; // reset score
-
-				/*
-				for(int i = 0; i < scoreObjs.size(); i++)
-					scoreObjs[i].textureString = "0";
-				*/
 
 				// reset position
 				player.x = SCREEN_W/2;
@@ -433,10 +386,7 @@ int main(int argc, char* argv[])
 
 			// player comes back
 			if (SDL_TICKS_PASSED(SDL_GetTicks(), playerDeathTimeout))
-			{
-				playerIsDead = false;
-				playerDeathRoutineRan = false;
-			}
+				playerIsDead = playerDeathRoutineRan = false;
 		}
 		// render current textures
 		renderPresent:
@@ -446,7 +396,6 @@ int main(int argc, char* argv[])
 		SDL_Delay(16);
 	}
 
-	//==============
 	// end game loop
 
 	// clean up
