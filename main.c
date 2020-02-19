@@ -95,6 +95,7 @@ int main(int argc, char* argv[])
 		highscoreRects[i].x = i*(TILE_W/2) + SCREEN_W - (TILE_W/2)*3;
 	}
 
+	/*
 	// snake blocks	
 	SDL_Rect snakeBody[399];
 	int sbIndex = 0;
@@ -111,6 +112,7 @@ int main(int argc, char* argv[])
 		moveSeq[i][j][1] = EMPTY; // y
 		moveSeq[i][j][2] = EMPTY; // move
 	}
+	*/
 
 	// construct food
 	SDL_Rect food = player;
@@ -216,6 +218,7 @@ int main(int argc, char* argv[])
 
 			// end get input
 
+		/*
 			// check for new player move, record move
 			if(playerMove != playerLastMove)
 			{
@@ -231,6 +234,7 @@ int main(int argc, char* argv[])
 					moveSeq[sbIndex][j][0] = playerMove;
 				}
 			}
+		*/
 
 			// update player pos and texture
 			switch(playerMove)
@@ -312,15 +316,17 @@ int main(int argc, char* argv[])
 				} // end if moveSeq not empty
 				
 			}
+*/
 
 			// collect food
-			if(SDL_HasIntersection(&player.rect, &food.rect))
+			if(SDL_HasIntersection(&player, &food))
 			{
 				score++;
 				highscore = score > highscore ? score : highscore; // record new highscore
 
 				int scoreTmp = score;
 				int highscoreTmp = highscore;
+/*
 				
 				// update score textures
 				for(int i = scoreObjs.size()-1; i > -1; i--)
@@ -347,16 +353,18 @@ int main(int argc, char* argv[])
 				glueToBack(snakeBody.back(), bodyBlock);
 
 				snakeBody.push_back(bodyBlock);
+	*/
 
 				// new food position
-				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
-				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
+				food.x = SDL_GetTicks() % (SCREEN_W - food.w);
+				food.y = SDL_GetTicks() % (SCREEN_H - food.h);
 			} // end food intersection routine
 
 			// screen edge collision
-			if(player.rect.getL() <= 0 || player.rect.getR() >= game::SCREEN_WIDTH || player.rect.getTop() <= 0 || player.rect.getBottom() >= game::SCREEN_HEIGHT)
-			playerIsDead = true;
+			if(player.x <= 0 || player.x+player.w >= SCREEN_W || player.y <= 0 || player.y+player.h >= SCREEN_H)
+				playerIsDead = true;
 
+			/*
 			// collision with self
 			for(int i = 1; i < snakeBody.size(); i++)
 				if(SDL_HasIntersection(&player.rect, &snakeBody[i].rect))
@@ -372,17 +380,20 @@ int main(int argc, char* argv[])
 
 			for(auto &s : highscoreObjs)
 				SDLw::render(s.textureString, &s.rect);
+			*/
 
 
 			// render player
-			SDLw::render(player.textureString, &player.rect);
+			SDL_RenderCopy(renderer, textures[playerTexture], NULL, &player);
 
 			// render food 
-			SDLw::render(food.textureString, &food.rect);
+			SDL_RenderCopy(renderer, textures[FOOD], NULL, &food);
 
+			/*
 			// render snake body
 			for(auto &b : snakeBody)
 				SDLw::render(b.textureString, &b.rect);
+			*/
 
 			
 		}
@@ -392,26 +403,30 @@ int main(int argc, char* argv[])
 			{
 				score = 0; // reset score
 
+				/*
 				for(int i = 0; i < scoreObjs.size(); i++)
 					scoreObjs[i].textureString = "0";
+				*/
 
 				// reset position
-				player.rect.x = player.initialX;
-				player.rect.y = player.initialY;
+				player.x = SCREEN_W/2;
+				player.y = SCREEN_H/2;
 
 				// reset last move
-				player.lastMove = game::UP;
+				playerMove = UP;
 
+				/*
 				// reset snake body
 				snakeBody.clear();
 				bodyBlock.lastMove = player.lastMove;
 				bodyBlock.moveSeq.clear();
 				glueToBack(player, bodyBlock);
 				snakeBody.push_back(bodyBlock);
+				*/
 
 				// new food position
-				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
-				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
+				food.x = SDL_GetTicks() % (SCREEN_W - food.w);
+				food.y = SDL_GetTicks() % (SCREEN_H - food.h);
 
 				playerDeathRoutineRan = true;
 			}
@@ -423,8 +438,6 @@ int main(int argc, char* argv[])
 				playerDeathRoutineRan = false;
 			}
 		}
-*/
-}//TMP
 		// render current textures
 		renderPresent:
 
