@@ -18,25 +18,25 @@ void getPlayerInput(gameObj& player, const Uint8* keyState)
 		// if last move was left/right, ignore left/right inputs
 		if(!wasPressed)
 		{
-			if(player.lastMove == game::LEFT || player.lastMove == game::RIGHT)
+			if(player.move == game::LEFT || player.move == game::RIGHT)
 			{
 				// move up
 				if (keyState[SDL_SCANCODE_UP])
-					player.lastMove = game::UP;
+					player.move = game::UP;
 
 				// move down
 				if (keyState[SDL_SCANCODE_DOWN])
-					player.lastMove = game::DOWN;
+					player.move = game::DOWN;
 			}
 			else
 			{
 				// move left
 				if (keyState[SDL_SCANCODE_LEFT])
-					player.lastMove = game::LEFT;
+					player.move = game::LEFT;
 
 				// move right
 				if (keyState[SDL_SCANCODE_RIGHT])
-					player.lastMove = game::RIGHT;
+					player.move = game::RIGHT;
 			}
 		}
 

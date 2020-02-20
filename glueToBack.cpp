@@ -4,7 +4,7 @@
 // glue b to back of a
 void glueToBack(gameObj& a, gameObj &b)
 {
-	switch(a.lastMove) // place snake block behind tail
+	switch(a.move) // place snake block behind tail
 	{
 		case game::UP:
 			b.rect.x = a.rect.getL();

@@ -52,7 +52,6 @@ int main(int argc, char* argv[])
 	game::allTextures["7"] = SDLw::loadTexture("assets/7.png");
 	game::allTextures["8"] = SDLw::loadTexture("assets/8.png");
 	game::allTextures["9"] = SDLw::loadTexture("assets/9.png");
-	//for(int i = 0; i < 10; i++) game::allTextures[std::to_string(i)] = SDLw::loadTexture(std::string(std::to_string(i)+".png").c_str());
 
 
 	// make player 
@@ -60,7 +59,7 @@ int main(int argc, char* argv[])
 
 	// construct player
 	gameObj player = gameObj("head-up", 5, game::SQUARE, game::SQUARE, game::SCREEN_WIDTH / 2 - 10 / 2, game::SCREEN_HEIGHT / 2 - 100 / 2);
-	player.lastMove = game::UP;
+	player.move = game::UP;
 
 	std::vector<gameObj> scoreObjs;
 	std::vector<gameObj> highscoreObjs;
@@ -74,9 +73,9 @@ int main(int argc, char* argv[])
 	
 	// snake body block to be cloned
 	// =============================
-	// S body block needs a lastMove and a moveSeq.
+	// S body block needs a move and a moveSeq.
 	// It will move in the direction of lastmove until it reaches the x,y in moveSeq.front().
-	// Once it reahes that x,y, it's lastMove will be updated to the move in moveSeq.front().
+	// Once it reahes that x,y, it's move will be updated to the move in moveSeq.front().
 	// That pair in moveSeq will then be popped off moveSeq front.
 
 	gameObj bodyBlock = gameObj("body", player.velocity, game::SQUARE, game::SQUARE, 0, 0);
@@ -86,9 +85,6 @@ int main(int argc, char* argv[])
 
 	// construct food
 	gameObj food = gameObj("food", 0, game::SQUARE, game::SQUARE, 0, 0);
-
-	// set background
-	gameObj bg = gameObj("cloud-bg", 5, 800, 600);
 
 	// game state booleans
 	bool quit = false;
@@ -107,7 +103,7 @@ int main(int argc, char* argv[])
 	// player life state bools
 	bool playerIsDead = true;
 	int playerDeathTimeout = 0;
-	bool playerDeathRoutineRan = false; // for running death routine only once
+	bool playerDeathRoutineRan = false; // for running death routine only once per timeout
 
 	DEBUG_MSG("entering game loop");
 	// game loop
@@ -157,16 +153,16 @@ int main(int argc, char* argv[])
 			playerDeathTimeout = SDL_GetTicks() + 800; // keep updating death timeout
 
 			// save player move
-			int playerMove = player.lastMove;
+			int playerMove = player.move;
 
 			// get input
 			getPlayerInput(player, keyState);
 
 			// check for new player move, record move
-			if(player.lastMove != playerMove)
+			if(player.move != playerMove)
 			{
 				for(auto &b : snakeBody)
-					b.moveSeq.push_back({{player.rect.x,player.rect.y}, player.lastMove});
+					b.moveSeq.push_back({{player.rect.x,player.rect.y}, player.move});
 			}
 
 			// update player pos
@@ -180,51 +176,43 @@ int main(int argc, char* argv[])
 					// block's coords
 					std::pair<int, int> xy = {b.moveSeq.front().first.first, b.moveSeq.front().first.second};
 
-					switch(b.lastMove)
+					switch(b.move)
 					{
 						case game::UP:
 							if(xy.second >= b.rect.y)
 							{
-								b.lastMove = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().second;
 								b.moveSeq.pop_front();
 							}
 						break;
 						case game::DOWN:
 							if(xy.second <= b.rect.y)
 							{
-								b.lastMove = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().second;
 								b.moveSeq.pop_front();
 							}
 						break;
 						case game::LEFT:
 							if(xy.first >= b.rect.x)
 							{
-								b.lastMove = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().second;
 								b.moveSeq.pop_front();
 							}
 						break;
 						case game::RIGHT:
 							if(xy.first <= b.rect.x)
 							{
-								b.lastMove = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().second;
 								b.moveSeq.pop_front();
 							}
 						break;
-
-							/*
-							if(xy.first == b.rect.x && xy.second == b.rect.y)
-							{
-								b.lastMove = b.moveSeq.front().second;
-								b.moveSeq.pop_front();
-							}
-							*/
 					}
 				} // end if moveSeq not empty
 				
 			}
 
 			// set player texture
-			switch(player.lastMove)
+			switch(player.move)
 			{
 				case game::UP:
 					player.textureString = "head-up";
@@ -271,7 +259,7 @@ int main(int argc, char* argv[])
 				// ===================
 
 				// set new last block's last move and move sequence to old last block's
-				bodyBlock.lastMove = snakeBody.back().lastMove;
+				bodyBlock.move = snakeBody.back().move;
 				bodyBlock.moveSeq = snakeBody.back().moveSeq;
 
 				glueToBack(snakeBody.back(), bodyBlock);
@@ -330,11 +318,11 @@ int main(int argc, char* argv[])
 				player.rect.y = player.initialY;
 
 				// reset last move
-				player.lastMove = game::UP;
+				player.move = game::UP;
 
 				// reset snake body
 				snakeBody.clear();
-				bodyBlock.lastMove = player.lastMove;
+				bodyBlock.move = player.move;
 				bodyBlock.moveSeq.clear();
 				glueToBack(player, bodyBlock);
 				snakeBody.push_back(bodyBlock);

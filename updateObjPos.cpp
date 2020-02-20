@@ -3,7 +3,7 @@
 
 void updateObjPos(gameObj& obj)
 {
-	switch(obj.lastMove)
+	switch(obj.move)
 	{
 		case game::UP:
 			if(obj.rect.getTop() > 0)

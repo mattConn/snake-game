@@ -48,7 +48,7 @@ class gameObj {
 	// takes rhs gameObj, xPos, yPos
 	gameObj(const gameObj& other, const int &xPos, const int &yPos);
 
-	int lastMove;
+	int move;
 
 	// fire rate members
 	int duration = 0; // duration of old bullet on screen
