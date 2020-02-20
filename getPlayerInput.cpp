@@ -1,6 +1,5 @@
 #include "SDLw.h"
 #include "game.h"
-#include "useful.h"
 
 #include "gameObj.h"
 #include <SDL2/SDL.h>

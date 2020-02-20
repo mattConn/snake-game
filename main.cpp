@@ -12,13 +12,19 @@
 #include "debug.h"
 #include "SDLw.h"
 #include "game.h"
-#include "useful.h"
 
 #include "gameObj.h"
 #include "updateObjPos.h"
 
 #include "getPlayerInput.h"
 #include "glueToBack.h"
+
+// generate random int over inclusive range
+int randomInt(const int &max, const int &min = 0)
+{
+	std::srand(SDL_GetTicks()); 
+	return std::rand() % max + min;
+}
 
 int main(int argc, char* argv[])
 {
@@ -267,8 +273,8 @@ int main(int argc, char* argv[])
 				snakeBody.push_back(bodyBlock);
 
 				// new food position
-				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
-				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
+				food.rect.x = randomInt(game::SCREEN_WIDTH - food.rect.w);
+				food.rect.y = randomInt(game::SCREEN_HEIGHT - food.rect.h);
 			} // end food intersection routine
 
 			// screen edge collision
@@ -328,8 +334,8 @@ int main(int argc, char* argv[])
 				snakeBody.push_back(bodyBlock);
 
 				// new food position
-				food.rect.x = useful::randomInt(game::SCREEN_WIDTH - food.rect.w);
-				food.rect.y = useful::randomInt(game::SCREEN_HEIGHT - food.rect.h);
+				food.rect.x = randomInt(game::SCREEN_WIDTH - food.rect.w);
+				food.rect.y = randomInt(game::SCREEN_HEIGHT - food.rect.h);
 
 				playerDeathRoutineRan = true;
 			}

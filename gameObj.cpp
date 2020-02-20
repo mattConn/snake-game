@@ -5,7 +5,6 @@
 #include <utility>
 #include "SDLw.h"
 #include "game.h"
-#include "useful.h"
 
 #include "debug.h"
 
