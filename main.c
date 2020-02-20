@@ -310,13 +310,40 @@ int main(int argc, char* argv[])
 					sbCapacity+=10;
 					SDL_Rect * sbTemp = realloc(snakeBody, sbCapacity*sizeof(SDL_Rect));
 					snakeBody = sbTemp;
-					
 				}
 
-				(snakeBody+sbIndex)->x = player.x+player.w;
-				(snakeBody+sbIndex)->y = player.y;
 				(snakeBody+sbIndex)->w = TILE_W;
 				(snakeBody+sbIndex)->h = TILE_H;
+
+				// position new block behind player
+				int newX = 0;
+				int newY = 0;
+				switch(playerMove)
+				{
+					case UP:
+					newX = player.x;
+					newY = player.y+player.h;
+					break;
+
+					case DOWN:
+					newX = player.x;
+					newY = player.y;
+					break;
+
+					case LEFT:
+					newX = player.x+player.w;
+					newY = player.y;
+					break;
+
+					case RIGHT:
+					newX = player.x-player.w;
+					newY = player.y;
+					break;
+				}
+
+				(snakeBody+sbIndex)->x = newX;
+				(snakeBody+sbIndex)->y = newY;
+
 				sbIndex++;
 
 		
