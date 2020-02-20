@@ -304,6 +304,15 @@ int main(int argc, char* argv[])
 				int highscoreTmp = highscore;
 
 				// increase snake body
+
+				if(sbIndex == sbCapacity)
+				{
+					sbCapacity+=10;
+					SDL_Rect * sbTemp = realloc(snakeBody, sbCapacity*sizeof(SDL_Rect));
+					snakeBody = sbTemp;
+					
+				}
+
 				(snakeBody+sbIndex)->x = player.x+player.w;
 				(snakeBody+sbIndex)->y = player.y;
 				(snakeBody+sbIndex)->w = TILE_W;
@@ -311,10 +320,6 @@ int main(int argc, char* argv[])
 				sbIndex++;
 
 		
-				if(sbIndex > sbCapacity)
-				{
-					// realloc	
-				}
 /*
 
 				// set new last block's last move and move sequence to old last block's
@@ -366,12 +371,6 @@ int main(int argc, char* argv[])
 			// render food 
 			SDL_RenderCopy(renderer, textures[FOOD], NULL, &food);
 
-			/*
-			// render snake body
-			for(auto &b : snakeBody)
-				SDLw::render(b.textureString, &b.rect);
-			*/
-
 			
 		}
 		else // player is dead
@@ -389,12 +388,14 @@ int main(int argc, char* argv[])
 
 				/*
 				// reset snake body
-				snakeBody.clear();
 				bodyBlock.lastMove = player.lastMove;
 				bodyBlock.moveSeq.clear();
 				glueToBack(player, bodyBlock);
 				snakeBody.push_back(bodyBlock);
 				*/
+
+				// reset snake body
+				sbIndex = 0;
 
 				// new food position
 				food.x = SDL_GetTicks() % (SCREEN_W - food.w);
