@@ -168,7 +168,9 @@ int main(int argc, char* argv[])
 			if(player.move != playerMove)
 			{
 				for(auto &b : snakeBody)
-					b.moveSeq.push_back({{player.rect.x,player.rect.y}, player.move});
+				{
+					b.moveSeq.push_back(movePoint(player.rect.x, player.rect.y, player.move));
+				}
 			}
 
 			// update player pos
@@ -180,35 +182,35 @@ int main(int argc, char* argv[])
 				if(b.moveSeq.size() > 0)
 				{
 					// block's coords
-					std::pair<int, int> xy = {b.moveSeq.front().first.first, b.moveSeq.front().first.second};
+					std::pair<int, int> xy = {b.moveSeq.front().x, b.moveSeq.front().y};
 
 					switch(b.move)
 					{
 						case game::UP:
 							if(xy.second >= b.rect.y)
 							{
-								b.move = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().move;
 								b.moveSeq.pop_front();
 							}
 						break;
 						case game::DOWN:
 							if(xy.second <= b.rect.y)
 							{
-								b.move = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().move;
 								b.moveSeq.pop_front();
 							}
 						break;
 						case game::LEFT:
 							if(xy.first >= b.rect.x)
 							{
-								b.move = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().move;
 								b.moveSeq.pop_front();
 							}
 						break;
 						case game::RIGHT:
 							if(xy.first <= b.rect.x)
 							{
-								b.move = b.moveSeq.front().second;
+								b.move = b.moveSeq.front().move;
 								b.moveSeq.pop_front();
 							}
 						break;

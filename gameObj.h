@@ -5,12 +5,21 @@
 #include <cassert>
 #include <string>
 #include <list>
-#include <utility>
 #include "SDLw.h"
 #include "game.h"
 
 #include "debug.h"
 
+class movePoint {
+	public:
+
+	movePoint(){};
+	movePoint(int X, int Y, int M) : x(X), y(Y), move(M){};
+	
+	int x = 0;
+	int y = 0;
+	int move = 0;	
+};
 
 // any game object
 // ===============
@@ -57,7 +66,7 @@ class gameObj {
 
 	// sequence of coords and moves
 	// ((x,y), move)
-	std::list<std::pair<std::pair<int, int>, int>> moveSeq;
+	std::list<movePoint> moveSeq;
 
 	void resetTimeout() { timeout = duration + SDL_GetTicks(); }
 
