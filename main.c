@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <math.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
@@ -119,6 +121,9 @@ int main(int argc, char* argv[])
 	// construct food
 	SDL_Rect food = player;
 
+	// seed random num generation for food pos
+	srand(time(NULL));
+
 	// game state booleans
 	bool quit = false;
 	bool paused = false;
@@ -137,6 +142,7 @@ int main(int argc, char* argv[])
 	bool playerIsDead = true;
 	int playerDeathTimeout = 0;
 	bool playerDeathRoutineRan = false; // for running death routine only once per timeout
+
 
 	// game loop
 	while (!quit)
@@ -316,33 +322,28 @@ int main(int argc, char* argv[])
 				(snakeBody+sbIndex)->h = TILE_H;
 
 				// position new block behind player
-				int newX = 0;
-				int newY = 0;
 				switch(playerMove)
 				{
 					case UP:
-					newX = player.x;
-					newY = player.y+player.h;
+					(snakeBody+sbIndex)->x = player.x;
+					(snakeBody+sbIndex)->y = player.y+player.h;
 					break;
 
 					case DOWN:
-					newX = player.x;
-					newY = player.y;
+					(snakeBody+sbIndex)->x = player.x;
+					(snakeBody+sbIndex)->y = player.y;
 					break;
 
 					case LEFT:
-					newX = player.x+player.w;
-					newY = player.y;
+					(snakeBody+sbIndex)->x = player.x+player.w;
+					(snakeBody+sbIndex)->y = player.y;
 					break;
 
 					case RIGHT:
-					newX = player.x-player.w;
-					newY = player.y;
+					(snakeBody+sbIndex)->x = player.x-player.w;
+					(snakeBody+sbIndex)->y = player.y;
 					break;
 				}
-
-				(snakeBody+sbIndex)->x = newX;
-				(snakeBody+sbIndex)->y = newY;
 
 				sbIndex++;
 
@@ -359,8 +360,8 @@ int main(int argc, char* argv[])
 	*/
 
 				// new food position
-				food.x = SDL_GetTicks() % (SCREEN_W - food.w);
-				food.y = SDL_GetTicks() % (SCREEN_H - food.h);
+				food.x = rand() % (SCREEN_W - food.w);
+				food.y = rand() % (SCREEN_H - food.h) + SDL_GetTicks() % 10;
 			} // end food intersection routine
 
 			// screen edge collision
@@ -425,8 +426,8 @@ int main(int argc, char* argv[])
 				sbIndex = 0;
 
 				// new food position
-				food.x = SDL_GetTicks() % (SCREEN_W - food.w);
-				food.y = SDL_GetTicks() % (SCREEN_H - food.h);
+				food.x = rand() % (SCREEN_W - food.w);
+				food.y = rand() % (SCREEN_H - food.h) + SDL_GetTicks() % 10;
 
 				playerDeathRoutineRan = true;
 			}
