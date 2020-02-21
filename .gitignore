@@ -3,5 +3,6 @@
 sdl-game
 .gitattributes
 *.user
+*.filters
 Debug
 snake-game
