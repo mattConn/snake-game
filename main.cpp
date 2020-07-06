@@ -19,6 +19,8 @@
 #include "getPlayerInput.h"
 #include "glueToBack.h"
 
+#include "emscripten.h"
+
 // generate random int over inclusive range
 int randomInt(const int &max, const int &min = 0)
 {
@@ -26,13 +28,13 @@ int randomInt(const int &max, const int &min = 0)
 	return std::rand() % max + min;
 }
 
-int main(int argc, char* argv[])
+void mainloop()
 {
 	// init sdl
 	if (!SDLw::init(SDLw::window, SDLw::windowSurface))
 	{
 		DEBUG_MSG("Init failed");
-		return -1;
+		return;
 	}
 
 	// hide cursor
@@ -356,16 +358,27 @@ int main(int argc, char* argv[])
 		SDL_RenderPresent(SDLw::renderer);
 
 		SDL_Delay(16);
+
+		  if(quit) {
+		    emscripten_cancel_main_loop();
+			SDLw::close();
+			
+		  }
 	}
 
 	//==============
 	// end game loop
 
 	// close SDL subsystems
-	SDLw::close();
 
 	DEBUG_MSG("Score: " << score);
 	DEBUG_MSG("Highscore: " << highscore);
 
+	return;
+}
+
+int main()
+{
+	emscripten_set_main_loop(mainloop, 0, 1);
 	return 0;
 }
