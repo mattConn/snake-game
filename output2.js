@@ -199,7 +199,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     }
   
    }
-   loadPackage({"files": [{"filename": "/assets/3.png", "start": 0, "end": 168, "audio": 0}, {"filename": "/assets/9.png", "start": 168, "end": 341, "audio": 0}, {"filename": "/assets/head-up.png", "start": 341, "end": 557, "audio": 0}, {"filename": "/assets/food.png", "start": 557, "end": 2354, "audio": 0}, {"filename": "/assets/5.png", "start": 2354, "end": 2528, "audio": 0}, {"filename": "/assets/head-right.png", "start": 2528, "end": 2759, "audio": 0}, {"filename": "/assets/7.png", "start": 2759, "end": 2940, "audio": 0}, {"filename": "/assets/head-left.png", "start": 2940, "end": 3161, "audio": 0}, {"filename": "/assets/8.png", "start": 3161, "end": 3330, "audio": 0}, {"filename": "/assets/0.png", "start": 3330, "end": 3496, "audio": 0}, {"filename": "/assets/body.png", "start": 3496, "end": 3613, "audio": 0}, {"filename": "/assets/2.png", "start": 3613, "end": 3797, "audio": 0}, {"filename": "/assets/head-down.png", "start": 3797, "end": 4020, "audio": 0}, {"filename": "/assets/1.png", "start": 4020, "end": 4190, "audio": 0}, {"filename": "/assets/6.png", "start": 4190, "end": 4361, "audio": 0}, {"filename": "/assets/4.png", "start": 4361, "end": 4532, "audio": 0}], "remote_package_size": 4532, "package_uuid": "b877df60-d1ee-468c-ad1a-3eb92e4be837"});
+   loadPackage({"files": [{"filename": "/assets/3.png", "start": 0, "end": 168, "audio": 0}, {"filename": "/assets/9.png", "start": 168, "end": 341, "audio": 0}, {"filename": "/assets/head-up.png", "start": 341, "end": 557, "audio": 0}, {"filename": "/assets/food.png", "start": 557, "end": 2354, "audio": 0}, {"filename": "/assets/5.png", "start": 2354, "end": 2528, "audio": 0}, {"filename": "/assets/head-right.png", "start": 2528, "end": 2759, "audio": 0}, {"filename": "/assets/7.png", "start": 2759, "end": 2940, "audio": 0}, {"filename": "/assets/head-left.png", "start": 2940, "end": 3161, "audio": 0}, {"filename": "/assets/8.png", "start": 3161, "end": 3330, "audio": 0}, {"filename": "/assets/0.png", "start": 3330, "end": 3496, "audio": 0}, {"filename": "/assets/body.png", "start": 3496, "end": 3613, "audio": 0}, {"filename": "/assets/2.png", "start": 3613, "end": 3797, "audio": 0}, {"filename": "/assets/head-down.png", "start": 3797, "end": 4020, "audio": 0}, {"filename": "/assets/1.png", "start": 4020, "end": 4190, "audio": 0}, {"filename": "/assets/6.png", "start": 4190, "end": 4361, "audio": 0}, {"filename": "/assets/4.png", "start": 4361, "end": 4532, "audio": 0}], "remote_package_size": 4532, "package_uuid": "b646e3f9-8deb-4244-9d64-1ac12b3a9358"});
   
   })();
   
@@ -862,8 +862,8 @@ var wasmMemory;
 // In the wasm backend, we polyfill the WebAssembly object,
 // so this creates a (non-native-wasm) table for us.
 var wasmTable = new WebAssembly.Table({
-  'initial': 993,
-  'maximum': 993 + 0,
+  'initial': 999,
+  'maximum': 999 + 0,
   'element': 'anyfunc'
 });
 
@@ -1501,11 +1501,11 @@ function updateGlobalBufferAndViews(buf) {
 }
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 5348416,
+    STACK_BASE = 5348800,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 105536,
-    DYNAMIC_BASE = 5348416,
-    DYNAMICTOP_PTR = 105376;
+    STACK_MAX = 105920,
+    DYNAMIC_BASE = 5348800,
+    DYNAMICTOP_PTR = 105760;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -2091,7 +2091,7 @@ function _emscripten_asm_const_iii(code, sigPtr, argbuf) {
 
 
 
-// STATICTOP = STATIC_BASE + 104512;
+// STATICTOP = STATIC_BASE + 104896;
 /* global initializers */  __ATINIT__.push({ func: function() { ___wasm_call_ctors() } });
 
 
@@ -7234,7 +7234,7 @@ function _emscripten_asm_const_iii(code, sigPtr, argbuf) {
     }
 
   function _emscripten_get_sbrk_ptr() {
-      return 105376;
+      return 105760;
     }
 
   function _emscripten_glActiveTexture(x0) { GLctx['activeTexture'](x0) }

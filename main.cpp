@@ -21,6 +21,43 @@
 
 #include "emscripten.h"
 
+gameObj player;
+
+std::vector<gameObj> scoreObjs;
+std::vector<gameObj> highscoreObjs;
+
+// snake body block to be cloned
+// =============================
+// S body block needs a move and a moveSeq.
+// It will move in the direction of lastmove until it reaches the x,y in moveSeq.front().
+// Once it reahes that x,y, it's move will be updated to the move in moveSeq.front().
+// That pair in moveSeq will then be popped off moveSeq front.
+
+gameObj bodyBlock;
+
+std::vector<gameObj> snakeBody;
+
+gameObj food;
+
+// game state booleans
+bool quit;
+bool paused;
+
+// scorekeeping
+int score;
+int highscore;
+
+// event handler
+SDL_Event event;
+
+// realtime keystate
+const Uint8* keyState;
+
+// player life state bools
+bool playerIsDead;
+int playerDeathTimeout;
+bool playerDeathRoutineRan;
+
 // generate random int over inclusive range
 int randomInt(const int &max, const int &min = 0)
 {
@@ -30,94 +67,11 @@ int randomInt(const int &max, const int &min = 0)
 
 void mainloop()
 {
-	// init sdl
-	if (!SDLw::init(SDLw::window, SDLw::windowSurface))
-	{
-		DEBUG_MSG("Init failed");
-		return;
-	}
 
-	// hide cursor
-	SDL_ShowCursor(SDL_DISABLE);
-
-	// containers
-	// ==========
-
-	// load textures
-	game::allTextures["head-up"] = SDLw::loadTexture("assets/head-up.png");
-	game::allTextures["head-right"] = SDLw::loadTexture("assets/head-right.png");
-	game::allTextures["head-down"] = SDLw::loadTexture("assets/head-down.png");
-	game::allTextures["head-left"] = SDLw::loadTexture("assets/head-left.png");
-	game::allTextures["body"] = SDLw::loadTexture("assets/body.png");
-	game::allTextures["food"] = SDLw::loadTexture("assets/food.png");
-	game::allTextures["0"] = SDLw::loadTexture("assets/0.png");
-	game::allTextures["1"] = SDLw::loadTexture("assets/1.png");
-	game::allTextures["2"] = SDLw::loadTexture("assets/2.png");
-	game::allTextures["3"] = SDLw::loadTexture("assets/3.png");
-	game::allTextures["4"] = SDLw::loadTexture("assets/4.png");
-	game::allTextures["5"] = SDLw::loadTexture("assets/5.png");
-	game::allTextures["6"] = SDLw::loadTexture("assets/6.png");
-	game::allTextures["7"] = SDLw::loadTexture("assets/7.png");
-	game::allTextures["8"] = SDLw::loadTexture("assets/8.png");
-	game::allTextures["9"] = SDLw::loadTexture("assets/9.png");
-
-
-	// make player 
-	// ===========
-
-	// construct player
-	gameObj player = gameObj("head-up", 5, game::SQUARE, game::SQUARE, game::SCREEN_WIDTH / 2 - 10 / 2, game::SCREEN_HEIGHT / 2 - 100 / 2);
-	player.move = game::UP;
-
-	std::vector<gameObj> scoreObjs;
-	std::vector<gameObj> highscoreObjs;
-
-	for(int i = 0; i < 3; i++)
-	{
-		scoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i * (game::SQUARE/2), 0) );
-		highscoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i*(game::SQUARE/2) + game::SCREEN_WIDTH - (game::SQUARE/2)*3, 0) );
-	}
-
-	
-	// snake body block to be cloned
-	// =============================
-	// S body block needs a move and a moveSeq.
-	// It will move in the direction of lastmove until it reaches the x,y in moveSeq.front().
-	// Once it reahes that x,y, it's move will be updated to the move in moveSeq.front().
-	// That pair in moveSeq will then be popped off moveSeq front.
-
-	gameObj bodyBlock = gameObj("body", player.velocity, game::SQUARE, game::SQUARE, 0, 0);
-
-	// snake body blocks
-	std::vector<gameObj> snakeBody;
-
-	// construct food
-	gameObj food = gameObj("food", 0, game::SQUARE, game::SQUARE, 0, 0);
-
-	// game state booleans
-	bool quit = false;
-	bool paused = false;
-
-	// scorekeeping
-	int score = 0;
-	int highscore = 0;
-
-	// event handler
-	SDL_Event event;
-
-	// realtime keystate
-	const Uint8* keyState = SDL_GetKeyboardState(nullptr);
-
-	// player life state bools
-	bool playerIsDead = true;
-	int playerDeathTimeout = 0;
-	bool playerDeathRoutineRan = false; // for running death routine only once per timeout
-
-	DEBUG_MSG("entering game loop");
 	// game loop
 	//===========
-	while (!quit)
-	{
+	//while (!quit)
+	//{
 		// event polling loop
 		while (SDL_PollEvent(&event))
 		{
@@ -357,28 +311,101 @@ void mainloop()
 
 		SDL_RenderPresent(SDLw::renderer);
 
-		SDL_Delay(16);
+		//SDL_Delay(16);
 
 		  if(quit) {
 		    emscripten_cancel_main_loop();
 			SDLw::close();
 			
 		  }
-	}
+	//}
 
 	//==============
 	// end game loop
 
 	// close SDL subsystems
 
-	DEBUG_MSG("Score: " << score);
-	DEBUG_MSG("Highscore: " << highscore);
+	//DEBUG_MSG("Score: " << score);
+	//DEBUG_MSG("Highscore: " << highscore);
 
-	return;
 }
 
 int main()
 {
+	// init sdl
+	if (!SDLw::init(SDLw::window, SDLw::windowSurface))
+	{
+		DEBUG_MSG("Init failed");
+		return -1;
+	}
+
+	// hide cursor
+	SDL_ShowCursor(SDL_DISABLE);
+
+	// containers
+	// ==========
+
+	// load textures
+	game::allTextures["head-up"] = SDLw::loadTexture("assets/head-up.png");
+	game::allTextures["head-right"] = SDLw::loadTexture("assets/head-right.png");
+	game::allTextures["head-down"] = SDLw::loadTexture("assets/head-down.png");
+	game::allTextures["head-left"] = SDLw::loadTexture("assets/head-left.png");
+	game::allTextures["body"] = SDLw::loadTexture("assets/body.png");
+	game::allTextures["food"] = SDLw::loadTexture("assets/food.png");
+	game::allTextures["0"] = SDLw::loadTexture("assets/0.png");
+	game::allTextures["1"] = SDLw::loadTexture("assets/1.png");
+	game::allTextures["2"] = SDLw::loadTexture("assets/2.png");
+	game::allTextures["3"] = SDLw::loadTexture("assets/3.png");
+	game::allTextures["4"] = SDLw::loadTexture("assets/4.png");
+	game::allTextures["5"] = SDLw::loadTexture("assets/5.png");
+	game::allTextures["6"] = SDLw::loadTexture("assets/6.png");
+	game::allTextures["7"] = SDLw::loadTexture("assets/7.png");
+	game::allTextures["8"] = SDLw::loadTexture("assets/8.png");
+	game::allTextures["9"] = SDLw::loadTexture("assets/9.png");
+
+
+	// make player 
+	// ===========
+
+	// construct player
+	player = gameObj("head-up", 5, game::SQUARE, game::SQUARE, game::SCREEN_WIDTH / 2 - 10 / 2, game::SCREEN_HEIGHT / 2 - 100 / 2);
+	player.move = game::UP;
+
+	for(int i = 0; i < 3; i++)
+	{
+		scoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i * (game::SQUARE/2), 0) );
+		highscoreObjs.push_back( gameObj(std::to_string(0), 0, game::SQUARE/2, game::SQUARE/2, i*(game::SQUARE/2) + game::SCREEN_WIDTH - (game::SQUARE/2)*3, 0) );
+	}
+
+	
+	// snake body block to be cloned
+	// =============================
+	// S body block needs a move and a moveSeq.
+	// It will move in the direction of lastmove until it reaches the x,y in moveSeq.front().
+	// Once it reahes that x,y, it's move will be updated to the move in moveSeq.front().
+	// That pair in moveSeq will then be popped off moveSeq front.
+
+	bodyBlock = gameObj("body", player.velocity, game::SQUARE, game::SQUARE, 0, 0);
+
+	// construct food
+	food = gameObj("food", 0, game::SQUARE, game::SQUARE, 0, 0);
+
+	// game state booleans
+	quit = false;
+	paused = false;
+
+	// scorekeeping
+	score = 0;
+	highscore = 0;
+
+	// realtime keystate
+	keyState = SDL_GetKeyboardState(nullptr);
+
+	// player life state bools
+	playerIsDead = true;
+	playerDeathTimeout = 0;
+	playerDeathRoutineRan = false; // for running death routine only once per timeout
+
 	emscripten_set_main_loop(mainloop, 0, 1);
 	return 0;
 }
