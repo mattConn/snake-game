@@ -19,7 +19,9 @@
 #include "getPlayerInput.h"
 #include "glueToBack.h"
 
+#ifdef __EMSCRIPTEN__
 #include "emscripten.h"
+#endif
 
 gameObj player;
 
@@ -311,10 +313,12 @@ void mainloop()
 
 		SDL_RenderPresent(SDLw::renderer);
 
-		//SDL_Delay(16);
+		SDL_Delay(16);
 
 		  if(quit) {
+			#ifdef __EMSCRIPTEN__
 		    emscripten_cancel_main_loop();
+			#endif
 			SDLw::close();
 			
 		  }
@@ -406,6 +410,12 @@ int main()
 	playerDeathTimeout = 0;
 	playerDeathRoutineRan = false; // for running death routine only once per timeout
 
+	#ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(mainloop, 0, 1);
+	#endif
+
+	#ifndef __EMSCRIPTEN__
+	while(!quit) mainloop();
+	#endif
 	return 0;
 }
