@@ -19,46 +19,7 @@
 #include "getPlayerInput.h"
 #include "glueToBack.h"
 
-#ifdef __EMSCRIPTEN__
 #include "emscripten.h"
-#endif
-
-gameObj player;
-
-std::vector<gameObj> scoreObjs;
-std::vector<gameObj> highscoreObjs;
-
-// snake body block to be cloned
-// =============================
-// S body block needs a move and a moveSeq.
-// It will move in the direction of lastmove until it reaches the x,y in moveSeq.front().
-// Once it reahes that x,y, it's move will be updated to the move in moveSeq.front().
-// That pair in moveSeq will then be popped off moveSeq front.
-
-gameObj bodyBlock;
-
-std::vector<gameObj> snakeBody;
-
-gameObj food;
-
-// game state booleans
-bool quit;
-bool paused;
-
-// scorekeeping
-int score;
-int highscore;
-
-// event handler
-SDL_Event event;
-
-// realtime keystate
-const Uint8* keyState;
-
-// player life state bools
-bool playerIsDead;
-int playerDeathTimeout;
-bool playerDeathRoutineRan;
 
 // generate random int over inclusive range
 int randomInt(const int &max, const int &min = 0)
@@ -69,11 +30,6 @@ int randomInt(const int &max, const int &min = 0)
 
 void mainloop()
 {
-
-	// game loop
-	//===========
-	//while (!quit)
-	//{
 		// event polling loop
 		while (SDL_PollEvent(&event))
 		{
@@ -315,26 +271,11 @@ void mainloop()
 
 		SDL_Delay(16);
 
-		  if(quit) {
-			#ifdef __EMSCRIPTEN__
-		    emscripten_cancel_main_loop();
-			#endif
-			SDLw::close();
-			
-		  }
-	//}
-
-	//==============
-	// end game loop
-
-	// close SDL subsystems
-
-	//DEBUG_MSG("Score: " << score);
-	//DEBUG_MSG("Highscore: " << highscore);
+		if(quit) SDLw::Close();
 
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 	// init sdl
 	if (!SDLw::init(SDLw::window, SDLw::windowSurface))
@@ -372,8 +313,11 @@ int main()
 	// ===========
 
 	// construct player
-	player = gameObj("head-up", 5, game::SQUARE, game::SQUARE, game::SCREEN_WIDTH / 2 - 10 / 2, game::SCREEN_HEIGHT / 2 - 100 / 2);
+	gameObj player = gameObj("head-up", 5, game::SQUARE, game::SQUARE, game::SCREEN_WIDTH / 2 - 10 / 2, game::SCREEN_HEIGHT / 2 - 100 / 2);
 	player.move = game::UP;
+
+	std::vector<gameObj> scoreObjs;
+	std::vector<gameObj> highscoreObjs;
 
 	for(int i = 0; i < 3; i++)
 	{
@@ -389,33 +333,46 @@ int main()
 	// Once it reahes that x,y, it's move will be updated to the move in moveSeq.front().
 	// That pair in moveSeq will then be popped off moveSeq front.
 
-	bodyBlock = gameObj("body", player.velocity, game::SQUARE, game::SQUARE, 0, 0);
+	gameObj bodyBlock = gameObj("body", player.velocity, game::SQUARE, game::SQUARE, 0, 0);
+
+	// snake body blocks
+	std::vector<gameObj> snakeBody;
 
 	// construct food
-	food = gameObj("food", 0, game::SQUARE, game::SQUARE, 0, 0);
+	gameObj food = gameObj("food", 0, game::SQUARE, game::SQUARE, 0, 0);
 
 	// game state booleans
-	quit = false;
-	paused = false;
+	bool quit = false;
+	bool paused = false;
 
 	// scorekeeping
-	score = 0;
-	highscore = 0;
+	int score = 0;
+	int highscore = 0;
+
+	// event handler
+	SDL_Event event;
 
 	// realtime keystate
-	keyState = SDL_GetKeyboardState(nullptr);
+	const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 
 	// player life state bools
-	playerIsDead = true;
-	playerDeathTimeout = 0;
-	playerDeathRoutineRan = false; // for running death routine only once per timeout
+	bool playerIsDead = true;
+	int playerDeathTimeout = 0;
+	bool playerDeathRoutineRan = false; // for running death routine only once per timeout
 
-	#ifdef __EMSCRIPTEN__
+	DEBUG_MSG("entering game loop");
+	// game loop
+	//===========
+	//while (!quit){}
+	
 	emscripten_set_main_loop(mainloop, 0, 1);
-	#endif
 
-	#ifndef __EMSCRIPTEN__
-	while(!quit) mainloop();
-	#endif
+	//==============
+	// end game loop
+
+
+	DEBUG_MSG("Score: " << score);
+	DEBUG_MSG("Highscore: " << highscore);
+
 	return 0;
 }
